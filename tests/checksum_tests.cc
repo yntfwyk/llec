@@ -34,5 +34,3 @@ TEST_CASE("FNV1a64", "[checksum][fnv1a]")
     llec::f32 fnumber = 0.99556644f;
     CHECK(llec::checksum::fnv1a<llec::u64>(&fnumber, sizeof(llec::f32)) == 0x976B0005B2C623D8u);
 }
-
-

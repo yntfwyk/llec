@@ -1,14 +1,14 @@
 #include <catch2/catch_test_macros.hpp>
 #include <container/index_preservation_array.hpp>
-#include <string.h>
 #include <iostream>
+#include <string.h>
 
 TEST_CASE("Insert", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 10> arr;
     CHECK(arr.size() == 0);
 
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         arr.insert("hello");
     }
@@ -21,7 +21,7 @@ TEST_CASE("Iterators", "[index_preservation_array]")
     {
         const llec::idxp_array<std::string, 10> arr;
 
-        int count{};
+        llec::s32 count{};
         for (auto&& elem : arr)
         {
             count++;
@@ -32,13 +32,13 @@ TEST_CASE("Iterators", "[index_preservation_array]")
     SECTION("Full array")
     {
         llec::idxp_array<std::string, 10> arr;
-        
-        for (int i = 0; i < arr.capacity(); i++)
+
+        for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             arr.insert("string");
         }
-        
-        int count{};
+
+        llec::s32 count{};
         for (auto&& elem : arr)
         {
             count++;
@@ -56,7 +56,7 @@ TEST_CASE("Data", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 10> arr;
 
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         arr.insert("string");
     }
@@ -73,7 +73,7 @@ TEST_CASE("Clear", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 10> arr;
 
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         arr.insert("string");
     }
@@ -88,9 +88,9 @@ TEST_CASE("Clear", "[index_preservation_array]")
 TEST_CASE("Erase", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 5> arr;
-    
+
     typename decltype(arr)::key_type keys[5];
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
     }
@@ -108,7 +108,7 @@ TEST_CASE("Subscript", "[index_preservation_array]")
     llec::idxp_array<std::string, 5> arr;
 
     typename decltype(arr)::key_type keys[5];
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
     }
@@ -123,13 +123,12 @@ TEST_CASE("Subscript", "[index_preservation_array]")
     CHECK(arr[keys[1]] == "string1");
 }
 
-
 TEST_CASE("Insert", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<llec::s32, 5> arr;
-    
+
     typename decltype(arr)::key_type keys[5];
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
     }
@@ -148,7 +147,7 @@ TEST_CASE("Iterators", "[index_preservation_array][trivial]")
     {
         const llec::idxp_array<int, 10> arr;
 
-        int count{};
+        llec::s32 count{};
         for (auto&& elem : arr)
         {
             count++;
@@ -159,13 +158,13 @@ TEST_CASE("Iterators", "[index_preservation_array][trivial]")
     SECTION("Full array")
     {
         llec::idxp_array<int, 10> arr;
-        
-        for (int i = 0; i < arr.capacity(); i++)
+
+        for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             arr.insert(i);
         }
-        
-        int count{};
+
+        llec::s32 count{};
         for (auto&& elem : arr)
         {
             count++;
@@ -183,7 +182,7 @@ TEST_CASE("Data", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<int, 10> arr;
 
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         arr.insert(9);
     }
@@ -200,7 +199,7 @@ TEST_CASE("Clear", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<int, 10> arr;
 
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         arr.insert(i);
     }
@@ -215,9 +214,9 @@ TEST_CASE("Clear", "[index_preservation_array][trivial]")
 TEST_CASE("Erase", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<int, 5> arr;
-    
+
     typename decltype(arr)::key_type keys[5];
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
     }
@@ -235,7 +234,7 @@ TEST_CASE("Subscript", "[index_preservation_array][trivial]")
     llec::idxp_array<int, 5> arr;
 
     typename decltype(arr)::key_type keys[5];
-    for (int i = 0; i < arr.capacity(); i++)
+    for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
     }
@@ -250,4 +249,3 @@ TEST_CASE("Subscript", "[index_preservation_array][trivial]")
     CHECK(arr.is_key_valid(keys[1]));
     CHECK(arr[keys[1]] == 1);
 }
-

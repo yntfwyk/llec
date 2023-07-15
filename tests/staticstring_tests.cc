@@ -11,7 +11,7 @@ TEST_CASE("StaticString length", "[static_string][length]")
 TEST_CASE("StaticString iteration", "[static_string][iteration]")
 {
     const char* str = "Hello World!";
-    
+
     SECTION("Non-const iteration")
     {
         llec::static_string sstr{"Hello World!"};
@@ -47,10 +47,9 @@ TEST_CASE("StaticString comparison", "[static_string][comparison]")
     {
         llec::static_string sstr1{"Hello World!"};
         llec::static_string sstr2{"Hello World!"};
-        
+
         CHECK(sstr1 == sstr2);
     }
-
 }
 
 TEST_CASE("StaticString concatenate", "[static_string][concatenate]")
@@ -142,7 +141,7 @@ TEST_CASE("StaticString capacity", "[static_string][capacity]")
         llec::static_string<256> sstr{};
         CHECK(sstr.capacity() == 256ull);
     }
-    
+
     {
         llec::static_string<128> sstr{};
         CHECK(sstr.capacity() == 128ull);

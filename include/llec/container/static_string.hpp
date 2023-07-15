@@ -146,13 +146,13 @@ namespace llec
             {
                 const std::size_t patternLength = pattern.length();
                 const std::size_t len = length();
-                for (int i = 0; i <= len - patternLength; i++)
+                for (std::size_t i = 0; i <= len - patternLength; i++)
                 {
-                    int j = 0;
+                    std::size_t j = 0;
                     while (j < patternLength && m_string[i + j] == pattern[j])
                         j++;
                     if (j == patternLength)
-                        return i;
+                        return static_cast<s32>(i);
                 }
             }
             return -1;

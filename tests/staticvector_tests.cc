@@ -9,7 +9,7 @@ TEST_CASE("Push Back", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(std::to_string(i));
     }
@@ -21,7 +21,7 @@ TEST_CASE("Pop Back", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(s_testString);
     }
@@ -32,12 +32,11 @@ TEST_CASE("Pop Back", "[static_vector]")
     CHECK(vec.size() == 3);
 }
 
-
 TEST_CASE("Push Back", "[static_vector][trivial]")
 {
     llec::static_vector<int, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(i);
     }
@@ -49,7 +48,7 @@ TEST_CASE("Pop Back", "[static_vector][trivial]")
 {
     llec::static_vector<int, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(i);
     }
@@ -64,14 +63,14 @@ TEST_CASE("Iterator", "[static_vector][trivial]")
 {
     llec::static_vector<int, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(i);
     }
 
     SECTION("Non-const")
     {
-        int i = 0;
+        llec::s32 i = 0;
         for (auto&& elem : vec)
         {
             i++;
@@ -79,10 +78,10 @@ TEST_CASE("Iterator", "[static_vector][trivial]")
         CHECK(vec.size() == i);
         CHECK(vec.size() == (vec.cend() - vec.cbegin()));
     }
-    
+
     SECTION("Const")
     {
-        int i = 0;
+        llec::s32 i = 0;
         for (auto&& elem : std::as_const(vec))
         {
             i++;
@@ -96,14 +95,14 @@ TEST_CASE("Iterator", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
 
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(s_testString + std::to_string(i + 1));
     }
 
     SECTION("Non-const")
     {
-        int i = 0;
+        llec::s32 i = 0;
         for (auto&& elem : vec)
         {
             i++;
@@ -114,7 +113,7 @@ TEST_CASE("Iterator", "[static_vector]")
 
     SECTION("Const")
     {
-        int i = 0;
+        llec::s32 i = 0;
         for (auto&& elem : std::as_const(vec))
         {
             i++;
@@ -129,7 +128,7 @@ TEST_CASE("Erase", "[static_vector]")
     SECTION("Random")
     {
         llec::static_vector<std::string, 5> vec;
-        for (int i = 0; i < vec.capacity(); i++)
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
         {
             vec.push_back(s_testString + std::to_string(i + 1));
         }
@@ -144,13 +143,13 @@ TEST_CASE("Erase", "[static_vector]")
     SECTION("Clear")
     {
         llec::static_vector<std::string, 5> vec;
-        for (int i = 0; i < vec.capacity(); i++)
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
         {
             vec.push_back(s_testString + std::to_string(i + 1));
         }
 
         CHECK(vec.size() == (vec.end() - vec.begin()));
-        for (int i = 0; i < vec.capacity(); i++)
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
         {
             vec.erase(vec.begin());
         }
@@ -161,7 +160,7 @@ TEST_CASE("Erase", "[static_vector]")
 TEST_CASE("Erase", "[static_vector][trivial]")
 {
     llec::static_vector<int, 11> vec;
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.push_back(i);
     }
@@ -207,11 +206,9 @@ TEST_CASE("Range erase", "[static_vector][trivial]")
 
 TEST_CASE("Range erase", "[static_vector]")
 {
-    llec::static_vector<std::string, 10> vec{s_testString + std::to_string(0), 
-        s_testString + std::to_string(1),
-        s_testString + std::to_string(2), 
-        s_testString + std::to_string(3), 
-        s_testString + std::to_string(4)};
+    llec::static_vector<std::string, 10> vec{s_testString + std::to_string(0), s_testString + std::to_string(1),
+                                             s_testString + std::to_string(2), s_testString + std::to_string(3),
+                                             s_testString + std::to_string(4)};
 
     vec.erase(vec.begin());
     vec.erase(vec.begin(), vec.end() - 1);
@@ -219,11 +216,10 @@ TEST_CASE("Range erase", "[static_vector]")
     CHECK(vec.size() == (vec.end() - vec.begin()));
 }
 
-
 TEST_CASE("Insert", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
-    for (int i = 0; i < vec.capacity() - 3; i++)
+    for (llec::s32 i = 0; i < vec.capacity() - 3; i++)
     {
         vec.insert(vec.begin(), std::to_string(i));
     }
@@ -241,7 +237,7 @@ TEST_CASE("Insert", "[static_vector]")
 TEST_CASE("Insert", "[static_vector][trivial]")
 {
     llec::static_vector<int, 5> vec;
-    for (int i = 0; i < vec.capacity() - 3; i++)
+    for (llec::s32 i = 0; i < vec.capacity() - 3; i++)
     {
         vec.insert(vec.end(), i);
     }
@@ -338,7 +334,7 @@ TEST_CASE("Initializer list", "[static_vector][trivial]")
     CHECK(cvec.size() == 5);
     llec::static_vector<int, 10> vec{6, 7, 8, 9, 10};
     vec.insert(vec.begin(), cvec.begin(), cvec.end());
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         CHECK(*(vec.cbegin() + i) == (i + 1));
     }
@@ -351,7 +347,7 @@ TEST_CASE("Initializer list", "[static_vector]")
     llec::static_vector<std::string, 5> vec{"1", "2", "3", "4", "5"};
     CHECK(vec.size() == 5);
 
-    for (int i = 0; i < 5; i++)
+    for (llec::s32 i = 0; i < 5; i++)
     {
         CHECK(*(vec.cbegin() + i) == std::to_string(i + 1));
     }
@@ -379,18 +375,18 @@ TEST_CASE("Emplace", "[static_vector]")
 TEST_CASE("Emplace back", "[static_vector][trivial]")
 {
     llec::static_vector<int, 5> vec;
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.emplace_back(i);
     }
     CHECK(vec.size() == vec.capacity());
 
-    int n{};
+    llec::s32 n{};
     for (auto&& elem : vec)
     {
         CHECK(elem == n++);
     }
-    
+
     CHECK(vec[vec.size() - 1] == 4);
     CHECK(vec.size() == (vec.end() - vec.begin()));
 }
@@ -398,13 +394,13 @@ TEST_CASE("Emplace back", "[static_vector][trivial]")
 TEST_CASE("Emplace back", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.emplace_back(std::to_string(i));
     }
     CHECK(vec.size() == vec.capacity());
 
-    int n{};
+    llec::s32 n{};
     for (auto&& elem : vec)
     {
         CHECK(elem == std::to_string(n++));
@@ -417,10 +413,40 @@ TEST_CASE("Emplace back", "[static_vector]")
 TEST_CASE("Clear", "[static_vector]")
 {
     llec::static_vector<std::string, 5> vec;
-    for (int i = 0; i < vec.capacity(); i++)
+    for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
         vec.emplace_back(std::to_string(i));
     }
     vec.clear();
     CHECK(vec.size() == 0);
+}
+
+TEST_CASE("Move operations", "[static_vector]")
+{
+    SECTION("Move constructor")
+    {
+        llec::static_vector<std::string, 5> vec = llec::static_vector<std::string, 5>{"1", "2", "3", "4", "5"};
+        llec::s32 i{1};
+        for (auto&& elem : vec)
+        {
+            CHECK(elem == std::to_string(i++));
+        }
+        CHECK(vec.size() == vec.capacity());
+    }
+
+    SECTION("Move assignment")
+    {
+        llec::static_vector<std::string, 5> vec;
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
+        {
+            vec.emplace_back(std::to_string(i));
+        }
+        decltype(vec) vec1 = std::move(vec);
+        llec::s32 i{};
+        for (auto&& elem : vec1)
+        {
+            CHECK(elem == std::to_string(i++));
+        }
+        CHECK(vec1.size() == vec1.capacity());
+    }
 }

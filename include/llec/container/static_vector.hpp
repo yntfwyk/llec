@@ -2,8 +2,6 @@
  * static_vector.hpp
  * A vector on the stack, almost every function is marked constexpr so we can expect compile time evaluations.
  * Not all functionality is present from std::vector, though the crucial and important ones are implemented.
- * Note: The class does not do any exception handling and probably will not in the future, there are asserts that
- * might help you catch errors and undefined behaviors.
  */
 
 #pragma once
@@ -33,6 +31,7 @@ namespace llec
         using reference = T&;
         using const_reference = const T&;
         using size_type = std::size_t;
+        using difference_type = std::ptrdiff_t;
 
         constexpr static_vector() noexcept = default;
         constexpr ~static_vector() noexcept = default;
@@ -176,14 +175,14 @@ namespace llec
 
             if (m_count == 0)
             {
-                for (int i = 0; i < count; i++)
+                for (size_type i = 0; i < count; i++)
                 {
                     std::construct_at(get_data_address(i), *(ibegin + i));
                 }
             }
             else if (_pos == cend())
             {
-                for (int i = 0; i < count; i++)
+                for (size_type i = 0; i < count; i++)
                 {
                     std::construct_at(get_data_address(m_count + i), *(ibegin + i));
                 }
@@ -192,7 +191,7 @@ namespace llec
             {
                 std::memcpy(const_cast<typename iterator::pointer>(std::addressof(*(_pos + count))),
                             std::addressof(*_pos), (cend() - _pos) * sizeof(value_type));
-                for (int i = 0; i < count; i++)
+                for (size_type i = 0; i < count; i++)
                 {
                     std::construct_at(std::addressof(*(_pos + i)), *(ibegin + i));
                 }
@@ -400,16 +399,21 @@ namespace llec
             }
         }
 
-        void move_all(static_vector&& other) noexcept
+        constexpr void move_all(static_vector&& other) noexcept
         {
             if (this != std::addressof(other)) LLEC_LIKELY
             {
-                clear();
+                if (m_count) LLEC_LIKELY
+                {
+                    clear();
+                }
+
                 for (size_type i = 0; i < other.m_count; i++)
                 {
                     insert(begin() + i, std::move(*(other.begin() + i)));
                 }
-                other.clear();
+
+                other.m_count = 0;
             }
         }
 

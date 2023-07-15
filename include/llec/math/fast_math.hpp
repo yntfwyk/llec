@@ -20,7 +20,7 @@ namespace llec::fast_math
     {
         static_assert(std::numeric_limits<T>::is_iec559);
         using integral_type = std::conditional_t<traits::is_f32_v<T>, u32, u64>;
-        constexpr integral_type magic = traits::is_f32_v<T> ? 0x5F375A86 : 0x5FE6EB50C7B537A9;
+        constexpr integral_type magic = traits::is_f32_v<T> ? 0x5F375A86u : 0x5FE6EB50C7B537A9ull;
         const T y = std::bit_cast<T>(magic - (std::bit_cast<integral_type>(number) >> 1));
         return y * (T(1.5) - (number * T(0.5) * y * y));
     }
