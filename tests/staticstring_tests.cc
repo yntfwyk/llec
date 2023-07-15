@@ -130,7 +130,7 @@ TEST_CASE("StaticString clear", "[static_string][clear]")
     sstr.clear();
     CHECK(sstr.length() == 0);
 }
-#include <math/fast_math.hpp>
+
 TEST_CASE("StaticString capacity", "[static_string][capacity]")
 {
     {
