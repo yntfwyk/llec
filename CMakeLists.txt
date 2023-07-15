@@ -39,7 +39,8 @@ add_executable(
   llec_tests
   ${LLEC_SRC_TESTS}
   ${LLEC_HEADERS}
-  .clang-format)
+  .clang-format
+  README.md)
 
 target_include_directories(llec_tests PRIVATE ${LLEC_INC_DIR})
 target_link_libraries(llec_tests PRIVATE Catch2::Catch2WithMain)

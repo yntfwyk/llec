@@ -188,7 +188,7 @@ namespace llec
             }
         }
 
-        constexpr size_type make_data() noexcept
+        LLEC_NODISCARD constexpr size_type make_data() noexcept
         {
             LLEC_ASSERT(m_count < Capacity);
             LLEC_ASSERT(m_freeList < Capacity);
@@ -202,7 +202,7 @@ namespace llec
             return freeSlot;
         }
 
-        constexpr T* get_data_address(size_type index = 0) noexcept
+        LLEC_NODISCARD constexpr T* get_data_address(size_type index = 0) noexcept
         {
             if constexpr (traits::is_trivially_xstructible_v<value_type>)
             {
@@ -214,7 +214,7 @@ namespace llec
             }
         }
 
-        constexpr const T* get_data_address(size_type index = 0) const noexcept
+        LLEC_NODISCARD constexpr const T* get_data_address(size_type index = 0) const noexcept
         {
             if constexpr (traits::is_trivially_xstructible_v<value_type>)
             {
