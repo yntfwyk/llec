@@ -340,6 +340,7 @@ TEST_CASE("Initializer list", "[static_vector][trivial]")
     }
 
     CHECK(vec.size() == (vec.end() - vec.begin()));
+    CHECK(vec.size() == (cvec.size() * 2));
 }
 
 TEST_CASE("Initializer list", "[static_vector]")

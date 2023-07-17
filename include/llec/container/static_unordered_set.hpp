@@ -38,6 +38,11 @@ namespace llec
             return insert_impl(std::move(value));
         }
 
+        constexpr void clear() noexcept
+        {
+            m_vector.clear();
+        }
+
         LLEC_NODISCARD constexpr iterator find(const Key& key) noexcept
         {
             for (auto it = begin(); it != end(); ++it)
@@ -52,11 +57,11 @@ namespace llec
 
         LLEC_NODISCARD constexpr const_iterator find(const Key& key) const noexcept
         {
-            for (auto&& it : std::as_const(m_vector))
+            for (auto it = cbegin(); it != cend(); ++it)
             {
                 if (m_eq(*it, key))
                 {
-                    return true;
+                    return it;
                 }
             }
             return cend();

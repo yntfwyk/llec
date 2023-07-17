@@ -27,6 +27,7 @@
 #include <utility>
 #include <bit>
 #include <limits>
+#include <algorithm>
 
 #include <concepts>
 

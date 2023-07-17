@@ -1,5 +1,4 @@
 #include <catch2/catch_test_macros.hpp>
-
 #include <container/static_string.hpp>
 
 TEST_CASE("StaticString length", "[static_string][length]")

@@ -23,7 +23,8 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
 set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
     ${LLEC_SRC_TESTS_DIR}/staticvector_tests.cc
     ${LLEC_SRC_TESTS_DIR}/staticstring_tests.cc
-    ${LLEC_SRC_TESTS_DIR}/indexpreservationarray_tests.cc)
+    ${LLEC_SRC_TESTS_DIR}/indexpreservationarray_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/staticunorderedset_tests.cc)
 
 Include(FetchContent)
 
