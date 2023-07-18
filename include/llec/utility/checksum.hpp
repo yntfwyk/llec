@@ -2,6 +2,7 @@
  * checksum.hpp
  * Collection light-weight checksum functions.
  */
+
 #pragma once
 #include "../core/core.hpp"
 

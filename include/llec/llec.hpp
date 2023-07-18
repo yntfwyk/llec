@@ -1,3 +1,8 @@
+/*
+ * llec.hpp
+ * Collection of llec headers.
+ */
+
 #pragma once
 
 #include "core/core.hpp"

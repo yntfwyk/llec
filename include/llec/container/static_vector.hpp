@@ -1,6 +1,7 @@
 /*
  * static_vector.hpp
- * A vector on the stack, almost every function is marked constexpr so we can expect compile time evaluations.
+ * A vector on the stack, almost every function is marked constexpr
+ * so we can expect compile time evaluations.
  * Not all functionality is present from std::vector, though the crucial and important ones are implemented.
  */
 

@@ -1,3 +1,8 @@
+/*
+ * basic_iterator.hpp
+ * Provides a basic contiguous iterator implementation.
+ */
+
 #pragma once
 #include <iterator>
 
