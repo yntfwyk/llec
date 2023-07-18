@@ -17,6 +17,69 @@ TEST_CASE("Insert", "[static_unordered_set]")
     CHECK(set.size() == set.capacity());
 }
 
+TEST_CASE("Range insert", "[static_unordered_set]")
+{
+    llec::static_unordered_set<std::string, 3> set;
+    std::initializer_list<std::string> il{"hello", " world", " world", "hello", " !"};
+    set.insert(il.begin(), il.end());
+    CHECK(set.size() == set.capacity());
+}
+
+TEST_CASE("Initializer list insert", "[static_unordered_set]")
+{
+    llec::static_unordered_set<std::string, 3> set;
+    set.insert({"hello", " world", " world", "hello", " !"});
+    CHECK(set.size() == set.capacity());
+}
+
+TEST_CASE("Erase", "[static_unordered_set]")
+{
+    SECTION("Iterator")
+    {
+        llec::static_unordered_set<std::string, 10> set;
+        set.insert({"The ", "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ", "dog"});
+        CHECK(set.size() == set.capacity() - 1);
+
+        CHECK(set.contains("brown "));
+        set.erase(set.begin() + 2);
+        CHECK(!set.contains("brown "));
+
+        CHECK(set.contains("dog"));
+        set.erase(set.end() - 1);
+        CHECK(!set.contains("dog"));
+
+        CHECK(set.size() == 7);
+    }
+
+    SECTION("Range")
+    {
+        llec::static_unordered_set<std::string, 10> set;
+        set.insert({"The ", "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ", "dog"});
+        CHECK(set.size() == set.capacity() - 1);
+
+        set.erase(set.begin() + 5, set.end());
+        CHECK(set.size() == 5);
+
+        set.erase(set.cbegin() + 1, set.cbegin() + 4);
+        CHECK(set.size() == 2);
+        CHECK(*(set.begin()) == "The ");
+        CHECK(*(set.end() - 1) == "jumps ");
+    }
+
+    SECTION("Key")
+    {
+        llec::static_unordered_set<std::string, 10> set;
+        set.insert({"The ", "quick ", "brown ", "fox ", "jumps ", "over ", "the ", "lazy ", "dog"});
+        CHECK(set.size() == set.capacity() - 1);
+
+        CHECK(set.erase("the "));
+        CHECK(!set.erase("hello"));
+        CHECK(set.erase("lazy "));
+        CHECK(!set.erase("lazy "));
+        CHECK(set.size() == 7);
+    }
+}
+
 TEST_CASE("Clear", "[static_unordered_set]")
 {
     llec::static_unordered_set<std::string, 3> set;
