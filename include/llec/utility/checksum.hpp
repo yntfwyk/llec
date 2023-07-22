@@ -1,6 +1,6 @@
 /*
  * checksum.hpp
- * Collection light-weight checksum functions.
+ * collection light-weight checksum functions.
  */
 
 #pragma once

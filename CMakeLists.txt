@@ -10,8 +10,9 @@ set(LLEC_SRC_TESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/core/core.hpp
     ${LLEC_INC_DIR}/core/time_capture.hpp
-    ${LLEC_INC_DIR}/container/static_vector.hpp
-    ${LLEC_INC_DIR}/container/static_string.hpp
+    ${LLEC_INC_DIR}/core/memory.hpp
+    ${LLEC_INC_DIR}/container/fixed_vector.hpp
+    ${LLEC_INC_DIR}/container/fixed_string.hpp
     ${LLEC_INC_DIR}/container/index_preservation_array.hpp
     ${LLEC_INC_DIR}/container/static_unordered_map.hpp
     ${LLEC_INC_DIR}/container/static_unordered_set.hpp
@@ -21,8 +22,8 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/private/basic_iterator.hpp)
 
 set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
-    ${LLEC_SRC_TESTS_DIR}/staticvector_tests.cc
-    ${LLEC_SRC_TESTS_DIR}/staticstring_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/fixedvector_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/fixedstring_tests.cc
     ${LLEC_SRC_TESTS_DIR}/indexpreservationarray_tests.cc
     ${LLEC_SRC_TESTS_DIR}/staticunorderedset_tests.cc)
 

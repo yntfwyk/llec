@@ -1,6 +1,6 @@
 /*
 * aligned_storage.hpp
-* Similar to std::aligned_storage which has been deprecated in c++23.
+* similar to std::aligned_storage which has been deprecated in c++23.
 */
 
 #pragma once
@@ -20,7 +20,7 @@ namespace llec
         };
         
         template <std::size_t Size, std::size_t Alignment>
-        using aligned_storage_t = aligned_storage<Size, Alignment>::type;
+        using aligned_storage_t = typename aligned_storage<Size, Alignment>::type;
 
     } // namespace details
 } // namespace llec

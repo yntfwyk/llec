@@ -1,6 +1,14 @@
+/*
+* core.hpp
+* core preprocessor macros, traits and includes.
+*/
 #pragma once
 
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__clang__) 
+#define LLEC_COMPILER_CLANG
+#define LLEC_CPP_VER __cplusplus
+#elif defined(__GNUC__)
+#define LLEC_COMPILER_GCC
 #define LLEC_CPP_VER __cplusplus
 #elif defined(_MSC_VER)
 #define LLEC_CPP_VER _MSVC_LANG
@@ -99,6 +107,9 @@ namespace llec
         concept double_precision = is_f64_v<T>;
         template <typename T>
         concept u32_64_integral = is_u32_v<T> || is_u64_v<T>;
+        template <typename T>
+        concept trivially_relocatable =
+            std::is_trivially_move_constructible_v<T> && std::is_trivially_copy_constructible_v<T> && std::is_trivially_destructible_v<T>;
 
     } // namespace traits
 

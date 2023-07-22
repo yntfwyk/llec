@@ -1,6 +1,6 @@
 /*
  * index_preservation_array.hpp
- * Commonly known as slot_map or SlotMap, the name was changed here because a Map
+ * commonly known as slot_map or SlotMap, the name was changed here because a Map
  * is a data structure that takes in a Key/Value pair, whereas this data structure generates a key
  * for the user. This version does not allocate any heap memory and is static in nature.
  * Thanks to Professor Retroman(@ProfesorRetroman) and Allan Deutsch(Allan@allandeutsch.com)
@@ -31,7 +31,7 @@ namespace llec
         using reference = T&;
         using const_reference = const T&;
 
-        struct key_type
+        struct handle
         {
             size_type id{0};
             size_type generation{0};
@@ -42,10 +42,12 @@ namespace llec
             init_index_array();
         }
 
+        // TODO: add constrcutors and destructors
+
         /// @brief inserts an element into the container
         /// @param value data to insert (lvalue)
         /// @return key associated with the data
-        constexpr key_type insert(const value_type& value) noexcept
+        constexpr handle insert(const value_type& value) noexcept
         {
             const size_type dataIndex = make_data();
             const auto& slot = m_indices[dataIndex];
@@ -57,7 +59,7 @@ namespace llec
         /// @brief inserts an element into the container
         /// @param value data to insert (rvalue)
         /// @return key associated with the data
-        constexpr key_type insert(value_type&& value) noexcept
+        constexpr handle insert(value_type&& value) noexcept
         {
             const size_type dataIndex = make_data();
             const auto& slot = m_indices[dataIndex];
@@ -69,12 +71,12 @@ namespace llec
         /// @brief removes the data from the container
         /// @param key to remove data from the container
         /// @return 'true' if data was successfully removed, else return 'false'
-        constexpr bool erase(key_type key) noexcept
+        constexpr bool erase(handle key) noexcept
         {
             if (!is_key_valid(key)) LLEC_UNLIKELY
                 return false;
 
-            key_type& slot = m_indices[key.id];
+            handle& slot = m_indices[key.id];
             const size_type dataIndex = slot.id;
             std::destroy_at(get_data_address(dataIndex));
             const size_type lastIndex = m_count - 1;
@@ -125,7 +127,7 @@ namespace llec
         /// @brief checks if the key is valid
         /// @param key
         /// @return 'true' if valid else returns 'false'
-        LLEC_NODISCARD constexpr bool is_key_valid(key_type key) const noexcept
+        LLEC_NODISCARD constexpr bool is_key_valid(handle key) const noexcept
         {
             return (key.id >= 0 && key.id < Capacity) && (key.generation == m_indices[key.id].generation);
         }
@@ -167,13 +169,13 @@ namespace llec
             return get_data_address(m_count);
         }
 
-        LLEC_NODISCARD constexpr T& operator[](key_type key) noexcept
+        LLEC_NODISCARD constexpr T& operator[](handle key) noexcept
         {
             LLEC_ASSERT(is_key_valid(key));
             return *get_data_address(m_indices[key.id].id);
         }
 
-        LLEC_NODISCARD constexpr const T& operator[](key_type key) const noexcept
+        LLEC_NODISCARD constexpr const T& operator[](handle key) const noexcept
         {
             LLEC_ASSERT(is_key_valid(key));
             return *get_data_address(m_indices[key.id].id);
@@ -205,25 +207,17 @@ namespace llec
         LLEC_NODISCARD constexpr T* get_data_address(size_type index = 0) noexcept
         {
             if constexpr (traits::is_trivially_xstructible_v<value_type>)
-            {
                 return (m_data.data() + index);
-            }
             else
-            {
                 return reinterpret_cast<T*>(std::addressof(m_data)) + index;
-            }
         }
 
         LLEC_NODISCARD constexpr const T* get_data_address(size_type index = 0) const noexcept
         {
             if constexpr (traits::is_trivially_xstructible_v<value_type>)
-            {
                 return (m_data.data() + index);
-            }
             else
-            {
                 return reinterpret_cast<const T*>(std::addressof(m_data)) + index;
-            }
         }
 
       private:
@@ -231,7 +225,7 @@ namespace llec
             std::conditional_t<traits::is_trivially_xstructible_v<value_type>, std::array<value_type, Capacity>,
                                details::aligned_storage_t<sizeof(value_type) * Capacity, alignof(value_type)>>;
         storage_type m_data{};
-        std::array<key_type, Capacity> m_indices{};
+        std::array<handle, Capacity> m_indices{};
         std::array<size_type, Capacity> m_erase{};
         size_type m_generation{0};
         size_type m_count{0};

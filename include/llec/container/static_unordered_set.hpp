@@ -7,7 +7,7 @@
 
 #pragma once
 #include "../core/core.hpp"
-#include "static_vector.hpp"
+#include "fixed_vector.hpp"
 
 namespace llec
 {
@@ -18,7 +18,7 @@ namespace llec
     template <typename Key, std::size_t Capacity, typename KeyEqual = std::equal_to<Key>>
     class static_unordered_set
     {
-        using storage_type = static_vector<Key, Capacity>;
+        using storage_type = fixed_vector<Key, Capacity>;
 
       public:
         using key_type = Key;

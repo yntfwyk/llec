@@ -22,7 +22,7 @@ TEST_CASE("Iterators", "[index_preservation_array]")
         const llec::idxp_array<std::string, 10> arr;
 
         llec::s32 count{};
-        for (auto&& elem : arr)
+        for ([[maybe_unused]] auto&& elem : arr)
         {
             count++;
         }
@@ -89,7 +89,7 @@ TEST_CASE("Erase", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 5> arr;
 
-    typename decltype(arr)::key_type keys[5];
+    typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
@@ -107,7 +107,7 @@ TEST_CASE("Subscript", "[index_preservation_array]")
 {
     llec::idxp_array<std::string, 5> arr;
 
-    typename decltype(arr)::key_type keys[5];
+    typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
@@ -127,7 +127,7 @@ TEST_CASE("Insert", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<llec::s32, 5> arr;
 
-    typename decltype(arr)::key_type keys[5];
+    typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
@@ -148,7 +148,7 @@ TEST_CASE("Iterators", "[index_preservation_array][trivial]")
         const llec::idxp_array<int, 10> arr;
 
         llec::s32 count{};
-        for (auto&& elem : arr)
+        for ([[maybe_unused]] auto&& elem : arr)
         {
             count++;
         }
@@ -215,7 +215,7 @@ TEST_CASE("Erase", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<int, 5> arr;
 
-    typename decltype(arr)::key_type keys[5];
+    typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
@@ -233,7 +233,7 @@ TEST_CASE("Subscript", "[index_preservation_array][trivial]")
 {
     llec::idxp_array<int, 5> arr;
 
-    typename decltype(arr)::key_type keys[5];
+    typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);

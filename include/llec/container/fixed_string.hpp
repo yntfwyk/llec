@@ -1,5 +1,5 @@
 /*
- * static_string.hpp
+ * fixed_string.hpp
  * A basic string class focusing on stack and compile-time operations.
  */
 
@@ -12,36 +12,36 @@ namespace llec
     /// @brief A basic string class focusing on stack and compile-time operations.
     /// @tparam Capacity constant size
     template <std::size_t Capacity = 512ull>
-    class static_string
+    class fixed_string
     {
       public:
         using iterator = details::basic_contiguous_iterator<char>;
         using const_iterator = details::basic_contiguous_const_iterator<char>;
 
-        constexpr static_string() noexcept = default;
+        constexpr fixed_string() noexcept = default;
 
         /// @brief parameterized constructor
         /// @param string takes a const char* string
-        explicit constexpr static_string(const char* string) noexcept
+        explicit constexpr fixed_string(const char* string) noexcept
         {
             if (!string) LLEC_UNLIKELY
                 return;
-            const std::size_t len = static_string_helper::const_string_length(string);
+            const std::size_t len = fixed_string_helper::const_string_length(string);
             if (!len)
                 clear();
             else
-                static_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+                fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
         }
 
-        constexpr static_string& operator=(const char* string) noexcept
+        constexpr fixed_string& operator=(const char* string) noexcept
         {
             if (string) LLEC_LIKELY
             {
-                const std::size_t len = static_string_helper::const_string_length(string);
+                const std::size_t len = fixed_string_helper::const_string_length(string);
                 if (!len)
                     clear();
                 else
-                    static_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+                    fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
             }
             return *this;
         }
@@ -56,7 +56,7 @@ namespace llec
             return m_string[n];
         }
 
-        constexpr static_string operator+(const static_string& other) const noexcept
+        constexpr fixed_string operator+(const fixed_string& other) const noexcept
         {
             if (other.is_empty()) LLEC_UNLIKELY
                 return *this;
@@ -64,13 +64,13 @@ namespace llec
             const std::size_t availability = len < Capacity - 1u ? Capacity - 1u - len : 0u;
             if (!availability)
                 return *this;
-            static_string result;
-            static_string_helper::copy_n(result.m_string, len, m_string);
-            static_string_helper::copy_n(result.m_string + len, availability, other.m_string);
+            fixed_string result;
+            fixed_string_helper::copy_n(result.m_string, len, m_string);
+            fixed_string_helper::copy_n(result.m_string + len, availability, other.m_string);
             return result;
         }
 
-        constexpr bool operator==(const static_string& other) const noexcept
+        constexpr bool operator==(const fixed_string& other) const noexcept
         {
             const std::size_t len = length();
             if (len != other.length())
@@ -81,7 +81,7 @@ namespace llec
             return true;
         }
 
-        constexpr bool operator!=(const static_string& other) const noexcept
+        constexpr bool operator!=(const fixed_string& other) const noexcept
         {
             return !operator==(other);
         }
@@ -91,27 +91,27 @@ namespace llec
             return m_string;
         }
 
-        /// @brief returns length of the static_string
+        /// @brief returns length of the fixed_string
         /// @return length of type size_t
         LLEC_NODISCARD constexpr std::size_t length() const noexcept
         {
-            return static_string_helper::const_string_length(m_string);
+            return fixed_string_helper::const_string_length(m_string);
         }
 
-        /// @brief returns constant capacity of static_string
+        /// @brief returns constant capacity of fixed_string
         /// @return capacity of type size_t
         LLEC_NODISCARD static constexpr std::size_t capacity()
         {
             return Capacity;
         }
 
-        /// @brief clears the static_string
-        LLEC_NODISCARD constexpr void clear() noexcept
+        /// @brief clears the fixed_string
+        constexpr void clear() noexcept
         {
-            static_string_helper::fill_n(m_string, Capacity, 0);
+            fixed_string_helper::fill_n(m_string, Capacity, 0);
         }
 
-        /// @brief checks if static_string is empty
+        /// @brief checks if fixed_string is empty
         /// @return true if empty, else returns false
         LLEC_NODISCARD constexpr bool is_empty() const noexcept
         {
@@ -121,26 +121,26 @@ namespace llec
         /// @brief returns substring
         /// @param pos start position
         /// @param n number of characters
-        /// @return substring of type static_string
-        LLEC_NODISCARD constexpr static_string substr(std::size_t pos, std::size_t n) const noexcept
+        /// @return substring of type fixed_string
+        LLEC_NODISCARD constexpr fixed_string substr(std::size_t pos, std::size_t n) const noexcept
         {
             if (is_empty())
                 return *this;
-            static_string result;
+            fixed_string result;
             const std::size_t srcLen = length();
             if (pos >= srcLen || !n)
                 return result;
             const std::size_t availability = srcLen - pos;
             n = n > availability ? availability : n;
-            static_string_helper::copy_n(result.m_string, n, m_string + pos);
+            fixed_string_helper::copy_n(result.m_string, n, m_string + pos);
             return result;
         }
 
-        /// @brief finds a pattern in the static_string
-        /// @param pattern sequence of characters of type static_string
+        /// @brief finds a pattern in the fixed_string
+        /// @param pattern sequence of characters of type fixed_string
         /// @return if found returns starting position of the pattern in the string
         /// else, returns -1
-        LLEC_NODISCARD constexpr s32 find(const static_string& pattern) const noexcept
+        LLEC_NODISCARD constexpr s32 find(const fixed_string& pattern) const noexcept
         {
             if (!pattern.is_empty())
             {
@@ -189,7 +189,7 @@ namespace llec
         }
 
       private:
-        struct static_string_helper
+        struct fixed_string_helper
         {
             static constexpr std::size_t const_string_length(const char* string) noexcept
             {
@@ -216,12 +216,12 @@ namespace llec
         char m_string[Capacity]{};
     };
 
-    /// @brief static_string of capacity 64bytes
-    using static_string64 = static_string<64>;
+    /// @brief fixed_string of capacity 64bytes
+    using fixed_string64 = fixed_string<64>;
 
-    /// @brief static_string of capacity 128bytes
-    using static_string128 = static_string<128>;
+    /// @brief fixed_string of capacity 128bytes
+    using fixed_string128 = fixed_string<128>;
 
-    /// @brief static_string of capacity 1024bytes
-    using static_string1024 = static_string<1024>;
+    /// @brief fixed_string of capacity 1024bytes
+    using fixed_string1024 = fixed_string<1024>;
 } // namespace llec

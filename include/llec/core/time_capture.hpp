@@ -1,6 +1,6 @@
 /*
  * time_capture.hpp
- * A minimalistic timer class.
+ * a minimalistic platform independent timer class.
  */
 
 #pragma once

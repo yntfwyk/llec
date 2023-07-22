@@ -1,6 +1,6 @@
 /*
  * basic_iterator.hpp
- * Provides a basic contiguous iterator implementation.
+ * provides a basic contiguous iterator implementation.
  */
 
 #pragma once
@@ -49,7 +49,7 @@ namespace llec
                 return tmp;
             }
 
-            virtual constexpr basic_contiguous_iterator operator+(difference_type n) noexcept
+            virtual constexpr basic_contiguous_iterator operator+(difference_type n) const noexcept
             {
                 return basic_contiguous_iterator{ptr + n};
             }
@@ -73,7 +73,7 @@ namespace llec
                 return tmp;
             }
 
-            virtual constexpr basic_contiguous_iterator operator-(difference_type n) noexcept
+            virtual constexpr basic_contiguous_iterator operator-(difference_type n) const noexcept
             {
                 return basic_contiguous_iterator{ptr - n};
             }
@@ -84,7 +84,7 @@ namespace llec
                 return *this;
             }
 
-            virtual constexpr difference_type operator-(basic_contiguous_iterator it) noexcept
+            virtual constexpr difference_type operator-(basic_contiguous_iterator it) const noexcept
             {
                 return ptr - it.ptr;
             }

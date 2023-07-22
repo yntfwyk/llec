@@ -1,6 +1,6 @@
 /*
  * fast_math.hpp
- * Collection of fast but unsafe math functions. Why are they unsafe? just because it doesn't do any error/exception
+ * collection of fast but unsafe math functions. why are they unsafe? just because it doesn't do any error/exception
  * handling like the standard implementations.
  */
 
