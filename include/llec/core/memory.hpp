@@ -16,17 +16,24 @@ namespace llec::memory
     /// @return
     constexpr void* memcpy(void* dest, const void* src, std::size_t n) noexcept
     {
-        const std::byte* srcBytes = static_cast<const std::byte*>(src);
-        std::byte* destBytes = static_cast<std::byte*>(dest);
+        if (std::is_constant_evaluated())
+        {
+            const std::byte* srcBytes = static_cast<const std::byte*>(src);
+            std::byte* destBytes = static_cast<std::byte*>(dest);
 #ifdef LLEC_COMPILER_CLANG
 #pragma clang loop vectorize(assume_safety)
 #elif defined(LLEC_COMPILER_GCC)
 #pragma GCC ivdep
-#endif // LLEC_CLANG
-        for (std::size_t i = 0; i < n; i++)
-            destBytes[i] = srcBytes[i];
+#endif // LLEC_COMPILER_CLANG
+            for (std::size_t i = 0; i < n; i++)
+                destBytes[i] = srcBytes[i];
 
-        return destBytes;
+            return destBytes;
+        }
+        else
+        {
+            return std::memcpy(dest, src, n);
+        }
     }
 
     /// @brief constexpr uninitialized_copy
@@ -45,6 +52,23 @@ namespace llec::memory
             std::construct_at(std::addressof(*current), *first);
         return current;
     }
+    
+    /// @brief constexpr uninitialized_copy
+    /// @tparam InputIt
+    /// @tparam OutputIt
+    /// @param first
+    /// @param last
+    /// @param destBegin
+    /// @return
+    template <class InputIt, class OutputIt>
+    constexpr OutputIt uninitialized_move(InputIt first, InputIt last, OutputIt destBegin) noexcept
+    {
+        using T = typename std::iterator_traits<OutputIt>::value_type;
+        OutputIt current = destBegin;
+        for (; first != last; ++first, (void)++current)
+            std::construct_at(std::addressof(*current), std::move(*first));
+        return current;
+    }
 
     /// @brief relocation, i.e. move + delete/destroy
     /// @tparam T
@@ -61,7 +85,7 @@ namespace llec::memory
             {
                 std::destroy_at(t);
             }
-        } g(source);
+        } g{source};
         return std::construct_at(destination, std::move(*source));
     }
 

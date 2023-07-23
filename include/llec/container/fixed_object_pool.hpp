@@ -1,13 +1,14 @@
 /*
- * index_preservation_array.hpp
+ * fixed_object_pool.hpp
  * commonly known as slot_map or SlotMap, the name was changed here because a Map
- * is a data structure that takes in a Key/Value pair, whereas this data structure generates a key
+ * is a data structure that takes in a Key/Value pair, whereas this data structure generates a handle
  * for the user. This version does not allocate any heap memory and is static in nature.
- * Thanks to Professor Retroman(@ProfesorRetroman) and Allan Deutsch(Allan@allandeutsch.com)
+ * thanks to Professor Retroman(@ProfesorRetroman) and Allan Deutsch(Allan@allandeutsch.com)
  */
 
 #pragma once
-#include "private/aligned_storage.hpp"
+#include "../core/memory.hpp"
+#include "../private/aligned_storage.hpp"
 #include <array>
 
 namespace llec
@@ -18,7 +19,7 @@ namespace llec
     /// @tparam Capacity maximum number of elements
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.
     template <typename T, std::size_t Capacity, typename TSize = std::size_t>
-    class index_preservation_array
+    class fixed_object_pool
     {
       public:
         using value_type = T;
@@ -37,16 +38,69 @@ namespace llec
             size_type generation{0};
         };
 
-        index_preservation_array() noexcept
+        fixed_object_pool() noexcept
         {
             init_index_array();
         }
 
-        // TODO: add constrcutors and destructors
+        ~fixed_object_pool() noexcept
+            requires(std::is_trivially_destructible_v<value_type>)
+        = default;
+
+        constexpr ~fixed_object_pool() noexcept
+        {
+            m_generation = 0;
+            m_freeList = 0;
+
+            if constexpr (!std::is_trivially_destructible_v<value_type>)
+            {
+                std::destroy_n(get_data_address(), m_count);
+            }
+
+            m_count = 0;
+        }
+
+        fixed_object_pool(const fixed_object_pool&) noexcept
+            requires(std::is_trivially_copy_constructible_v<value_type>)
+        = default;
+
+        constexpr fixed_object_pool(const fixed_object_pool& other) noexcept
+        {
+            copy_all();
+        }
+
+        fixed_object_pool& operator=(const fixed_object_pool&) noexcept
+            requires(std::is_trivially_copy_assignable_v<value_type>)
+        = default;
+
+        constexpr fixed_object_pool& operator=(const fixed_object_pool& other) noexcept
+        {
+            copy_all();
+            return *this;
+        }
+
+        fixed_object_pool(fixed_object_pool&&) noexcept
+            requires(std::is_trivially_move_constructible_v<value_type>)
+        = default;
+
+        constexpr fixed_object_pool(fixed_object_pool&& other) noexcept
+        {
+            relocate_all();
+        }
+
+        fixed_object_pool& operator=(fixed_object_pool&&) noexcept
+            requires(std::is_trivially_move_assignable_v<value_type>)
+        = default;
+
+        constexpr fixed_object_pool& operator=(fixed_object_pool&& other) noexcept
+        {
+            relocate_all();
+            return *this;
+        }
 
         /// @brief inserts an element into the container
         /// @param value data to insert (lvalue)
-        /// @return key associated with the data
+        /// @return handle associated with the data
         constexpr handle insert(const value_type& value) noexcept
         {
             const size_type dataIndex = make_data();
@@ -56,40 +110,60 @@ namespace llec
             return {dataIndex, slot.generation};
         }
 
-        /// @brief inserts an element into the container
-        /// @param value data to insert (rvalue)
-        /// @return key associated with the data
-        constexpr handle insert(value_type&& value) noexcept
+        /// @brief emplaces and element to the end of the container
+        /// @tparam ...Args 
+        /// @param ...args 
+        /// @return handle associated with the data
+        template <typename... Args>
+        constexpr handle emplace(Args&&... args) noexcept
         {
             const size_type dataIndex = make_data();
             const auto& slot = m_indices[dataIndex];
             m_erase[slot.id] = dataIndex;
-            std::construct_at(get_data_address(m_count - 1), std::move(value));
+
+            // uninitialized move
+            std::construct_at(get_data_address(m_count - 1), std::forward<Args>(args)...);
             return {dataIndex, slot.generation};
         }
 
-        /// @brief removes the data from the container
-        /// @param key to remove data from the container
-        /// @return 'true' if data was successfully removed, else return 'false'
-        constexpr bool erase(handle key) noexcept
+        /// @brief inserts an element into the container
+        /// @param value data to insert (rvalue)
+        /// @return handle associated with the data
+        constexpr handle insert(value_type&& value) noexcept
         {
-            if (!is_key_valid(key)) LLEC_UNLIKELY
-                return false;
+            return emplace(value);
+        }
 
-            handle& slot = m_indices[key.id];
+        /// @brief removes the data from the container
+        /// @param handle to remove data from the container
+        /// @return 'true' if data was successfully removed, else return 'false'
+        constexpr bool erase(handle hndl) noexcept
+        {
+            if (!is_handle_valid(hndl))
+                LLEC_UNLIKELY
+            return false;
+
+            handle& slot = m_indices[hndl.id];
             const size_type dataIndex = slot.id;
             std::destroy_at(get_data_address(dataIndex));
             const size_type lastIndex = m_count - 1;
             if (dataIndex != lastIndex)
             {
-                std::exchange(*get_data_address(dataIndex), *get_data_address(lastIndex));
+                if constexpr (traits::trivially_relocatable<value_type>)
+                {
+                    memory::memcpy(get_data_address(dataIndex), get_data_address(lastIndex), sizeof(value_type));
+                }
+                else
+                {
+                    memory::relocate(get_data_address(dataIndex), get_data_address(lastIndex));
+                }
                 m_erase[dataIndex] = m_erase[lastIndex];
                 m_indices[m_erase[dataIndex]].id = dataIndex;
             }
             m_count--;
             slot.id = m_freeList;
             slot.generation++;
-            m_freeList = key.id;
+            m_freeList = hndl.id;
             return true;
         }
 
@@ -97,17 +171,15 @@ namespace llec
         constexpr void clear() noexcept
         {
             m_generation = 0;
-            m_count = 0;
             m_freeList = 0;
             init_index_array();
 
-            if constexpr (!traits::is_trivially_xstructible_v<value_type>)
+            if constexpr (!std::is_trivially_destructible_v<value_type>)
             {
-                for (size_type i = 0; i < m_count; i++)
-                {
-                    std::destroy_at(get_data_address(i));
-                }
+                std::destroy_n(get_data_address(), m_count);
             }
+
+            m_count = 0;
         }
 
         /// @brief returns the size of the container
@@ -124,12 +196,12 @@ namespace llec
             return Capacity;
         }
 
-        /// @brief checks if the key is valid
-        /// @param key
+        /// @brief checks if the handle is valid
+        /// @param hndl
         /// @return 'true' if valid else returns 'false'
-        LLEC_NODISCARD constexpr bool is_key_valid(handle key) const noexcept
+        LLEC_NODISCARD constexpr bool is_handle_valid(handle hndl) const noexcept
         {
-            return (key.id >= 0 && key.id < Capacity) && (key.generation == m_indices[key.id].generation);
+            return (hndl.id >= 0 && hndl.id < Capacity) && (hndl.generation == m_indices[hndl.id].generation);
         }
 
         /// @brief returns pointer to the underlying raw data
@@ -169,16 +241,16 @@ namespace llec
             return get_data_address(m_count);
         }
 
-        LLEC_NODISCARD constexpr T& operator[](handle key) noexcept
+        LLEC_NODISCARD constexpr T& operator[](handle hndl) noexcept
         {
-            LLEC_ASSERT(is_key_valid(key));
-            return *get_data_address(m_indices[key.id].id);
+            LLEC_ASSERT(is_handle_valid(hndl));
+            return *get_data_address(m_indices[hndl.id].id);
         }
 
-        LLEC_NODISCARD constexpr const T& operator[](handle key) const noexcept
+        LLEC_NODISCARD constexpr const T& operator[](handle hndl) const noexcept
         {
-            LLEC_ASSERT(is_key_valid(key));
-            return *get_data_address(m_indices[key.id].id);
+            LLEC_ASSERT(is_handle_valid(hndl));
+            return *get_data_address(m_indices[hndl.id].id);
         }
 
       private:
@@ -220,6 +292,46 @@ namespace llec
                 return reinterpret_cast<const T*>(std::addressof(m_data)) + index;
         }
 
+        constexpr void copy_all(const fixed_object_pool& other) noexcept
+        {
+            if (this != std::addressof(other))
+                LLEC_LIKELY
+                {
+                    std::copy(other.begin(), other.end(), begin());
+                    std::copy(other.m_erase, other.m_erase + other.m_count, m_erase);
+                    std::copy(other.m_indices, other.m_indices + capacity(), m_indices);
+                    m_count = other.m_count;
+                    m_generation = other.m_generation;
+                    m_freeList = other.m_freeList;
+                }
+        }
+
+        constexpr void relocate_all(fixed_object_pool&& other) noexcept
+        {
+            if (this != std::addressof(other))
+                LLEC_LIKELY
+                {
+                    if constexpr (traits::relocatable<value_type>)
+                    {
+                        memory::relocate(other.begin(), other.end(), begin());
+                        memory::relocate(other.m_erase, other.m_erase + other.m_count, m_erase);
+                        memory::relocate(other.m_indices, other.m_indices + capacity(), m_indices);
+                        m_count = std::exchange(other.m_count, 0);
+                        m_generation = std::exchange(other.m_generation, 0);
+                        m_freeList = std::exchange(other.m_freeList, 0);
+                    }
+                    else
+                    {
+                        memory::uninitialized_move(other.begin(), other.end(), begin());
+                        memory::uninitialized_move(other.m_erase, other.m_erase + other.m_count, m_erase);
+                        memory::uninitialized_move(other.m_indices, other.m_indices + capacity(), m_indices);
+                        m_count = other.m_count;
+                        m_generation = other.m_generation;
+                        m_freeList = other.m_freeList;
+                    }
+                }
+        }
+
       private:
         using storage_type =
             std::conditional_t<traits::is_trivially_xstructible_v<value_type>, std::array<value_type, Capacity>,
@@ -232,11 +344,11 @@ namespace llec
         size_type m_freeList{0};
     };
 
-    /// @brief type alias for index_preservation_array
+    /// @brief type alias for fixed_object_pool 
     /// @tparam T type
     /// @tparam Capacity maximum number of elements
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.
     template <typename T, std::size_t Capacity, typename TSize = std::size_t>
-    using idxp_array = index_preservation_array<T, Capacity, TSize>;
+    using fop = fixed_object_pool<T, Capacity, TSize>;
 
 } // namespace llec

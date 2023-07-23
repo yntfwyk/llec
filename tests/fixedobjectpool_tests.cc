@@ -1,11 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/index_preservation_array.hpp>
+#include <container/fixed_object_pool.hpp>
 #include <iostream>
 #include <string.h>
 
-TEST_CASE("Insert", "[index_preservation_array]")
+TEST_CASE("Insert", "[fixed_object_pool]")
 {
-    llec::idxp_array<std::string, 10> arr;
+    llec::fop<std::string, 10> arr;
     CHECK(arr.size() == 0);
 
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -15,11 +15,11 @@ TEST_CASE("Insert", "[index_preservation_array]")
     CHECK(arr.size() == 10);
 }
 
-TEST_CASE("Iterators", "[index_preservation_array]")
+TEST_CASE("Iterators", "[fixed_object_pool]")
 {
     SECTION("Empty array")
     {
-        const llec::idxp_array<std::string, 10> arr;
+        const llec::fop<std::string, 10> arr;
 
         llec::s32 count{};
         for ([[maybe_unused]] auto&& elem : arr)
@@ -31,7 +31,7 @@ TEST_CASE("Iterators", "[index_preservation_array]")
 
     SECTION("Full array")
     {
-        llec::idxp_array<std::string, 10> arr;
+        llec::fop<std::string, 10> arr;
 
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
@@ -52,9 +52,9 @@ TEST_CASE("Iterators", "[index_preservation_array]")
     }
 }
 
-TEST_CASE("Data", "[index_preservation_array]")
+TEST_CASE("Data", "[fixed_object_pool]")
 {
-    llec::idxp_array<std::string, 10> arr;
+    llec::fop<std::string, 10> arr;
 
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
@@ -69,9 +69,9 @@ TEST_CASE("Data", "[index_preservation_array]")
     }
 }
 
-TEST_CASE("Clear", "[index_preservation_array]")
+TEST_CASE("Clear", "[fixed_object_pool]")
 {
-    llec::idxp_array<std::string, 10> arr;
+    llec::fop<std::string, 10> arr;
 
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
@@ -85,9 +85,9 @@ TEST_CASE("Clear", "[index_preservation_array]")
     CHECK(arr.size() == 0);
 }
 
-TEST_CASE("Erase", "[index_preservation_array]")
+TEST_CASE("Erase", "[fixed_object_pool]")
 {
-    llec::idxp_array<std::string, 5> arr;
+    llec::fop<std::string, 5> arr;
 
     typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -103,9 +103,9 @@ TEST_CASE("Erase", "[index_preservation_array]")
     CHECK(arr.size() == 2);
 }
 
-TEST_CASE("Subscript", "[index_preservation_array]")
+TEST_CASE("Subscript", "[fixed_object_pool]")
 {
-    llec::idxp_array<std::string, 5> arr;
+    llec::fop<std::string, 5> arr;
 
     typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -117,15 +117,15 @@ TEST_CASE("Subscript", "[index_preservation_array]")
     CHECK(!arr.erase(keys[4]));
     CHECK(arr.erase(keys[0]));
     CHECK(arr.erase(keys[2]));
-    CHECK(!arr.is_key_valid(keys[2]));
+    CHECK(!arr.is_handle_valid(keys[2]));
     CHECK(arr.size() == 2);
-    CHECK(arr.is_key_valid(keys[1]));
+    CHECK(arr.is_handle_valid(keys[1]));
     CHECK(arr[keys[1]] == "string1");
 }
 
-TEST_CASE("Insert", "[index_preservation_array][trivial]")
+TEST_CASE("Insert", "[fixed_object_pool][trivial]")
 {
-    llec::idxp_array<llec::s32, 5> arr;
+    llec::fop<llec::s32, 5> arr;
 
     typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -141,11 +141,11 @@ TEST_CASE("Insert", "[index_preservation_array][trivial]")
     CHECK(arr.size() == 2);
 }
 
-TEST_CASE("Iterators", "[index_preservation_array][trivial]")
+TEST_CASE("Iterators", "[fixed_object_pool][trivial]")
 {
     SECTION("Empty array")
     {
-        const llec::idxp_array<int, 10> arr;
+        const llec::fop<int, 10> arr;
 
         llec::s32 count{};
         for ([[maybe_unused]] auto&& elem : arr)
@@ -157,7 +157,7 @@ TEST_CASE("Iterators", "[index_preservation_array][trivial]")
 
     SECTION("Full array")
     {
-        llec::idxp_array<int, 10> arr;
+        llec::fop<int, 10> arr;
 
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
@@ -178,9 +178,9 @@ TEST_CASE("Iterators", "[index_preservation_array][trivial]")
     }
 }
 
-TEST_CASE("Data", "[index_preservation_array][trivial]")
+TEST_CASE("Data", "[fixed_object_pool][trivial]")
 {
-    llec::idxp_array<int, 10> arr;
+    llec::fop<int, 10> arr;
 
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
@@ -195,9 +195,9 @@ TEST_CASE("Data", "[index_preservation_array][trivial]")
     }
 }
 
-TEST_CASE("Clear", "[index_preservation_array][trivial]")
+TEST_CASE("Clear", "[fixed_object_pool][trivial]")
 {
-    llec::idxp_array<int, 10> arr;
+    llec::fop<int, 10> arr;
 
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
@@ -211,9 +211,9 @@ TEST_CASE("Clear", "[index_preservation_array][trivial]")
     CHECK(arr.size() == 0);
 }
 
-TEST_CASE("Erase", "[index_preservation_array][trivial]")
+TEST_CASE("Erase", "[fixed_object_pool][trivial]")
 {
-    llec::idxp_array<int, 5> arr;
+    llec::fop<int, 5> arr;
 
     typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -229,9 +229,9 @@ TEST_CASE("Erase", "[index_preservation_array][trivial]")
     CHECK(arr.size() == 2);
 }
 
-TEST_CASE("Subscript", "[index_preservation_array][trivial]")
+TEST_CASE("Subscript", "[fixed_object_pool][trivial]")
 {
-    llec::idxp_array<int, 5> arr;
+    llec::fop<int, 5> arr;
 
     typename decltype(arr)::handle keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
@@ -244,8 +244,8 @@ TEST_CASE("Subscript", "[index_preservation_array][trivial]")
     CHECK(!arr.erase(keys[4]));
     CHECK(arr.erase(keys[0]));
     CHECK(arr.erase(keys[2]));
-    CHECK(!arr.is_key_valid(keys[2]));
+    CHECK(!arr.is_handle_valid(keys[2]));
     CHECK(arr.size() == 2);
-    CHECK(arr.is_key_valid(keys[1]));
+    CHECK(arr.is_handle_valid(keys[1]));
     CHECK(arr[keys[1]] == 1);
 }

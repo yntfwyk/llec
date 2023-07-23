@@ -8,9 +8,9 @@
 #include "core/core.hpp"
 
 // containers
+#include "container/fixed_object_pool.hpp"
 #include "container/fixed_string.hpp"
 #include "container/fixed_vector.hpp"
-#include "container/index_preservation_array.hpp"
 #include "container/static_unordered_set.hpp"
 
 // hash and checksum

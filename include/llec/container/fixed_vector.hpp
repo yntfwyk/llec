@@ -8,9 +8,9 @@
 
 #pragma once
 #include "../core/core.hpp"
+#include "../core/memory.hpp"
 #include "../private/aligned_storage.hpp"
 #include "../private/basic_iterator.hpp"
-#include "../core/memory.hpp"
 #include <algorithm>
 #include <array>
 
@@ -38,12 +38,13 @@ namespace llec
         using difference_type = std::ptrdiff_t;
 
         constexpr fixed_vector() noexcept = default;
-        constexpr ~fixed_vector() noexcept
-            requires(traits::is_trivially_xstructible_v<T>)
-        = default;
         ~fixed_vector() noexcept
+            requires(std::is_trivially_destructible_v<T>)
+        = default;
+
+        constexpr ~fixed_vector() noexcept
         {
-            std::destroy(begin(), end());
+            clear();
         }
 
         constexpr fixed_vector(std::initializer_list<value_type> il) noexcept
@@ -51,40 +52,50 @@ namespace llec
             insert(cbegin(), il.begin(), il.end());
         }
 
-        constexpr fixed_vector(const fixed_vector& other) noexcept
-            requires(std::is_trivially_copy_constructible_v<T>)
+        fixed_vector(const fixed_vector&) noexcept
+            requires(std::is_trivially_copy_constructible_v<value_type>)
         = default;
 
         constexpr fixed_vector(const fixed_vector& other) noexcept
         {
-            std::copy(other.begin(), other.end(), begin());
+            copy_all(other);
         }
 
-        constexpr fixed_vector& operator=(const fixed_vector&) noexcept
+        fixed_vector& operator=(const fixed_vector&) noexcept
             requires(std::is_trivially_copy_assignable_v<value_type>)
         = default;
 
         constexpr fixed_vector& operator=(const fixed_vector& other) noexcept
         {
-            std::copy(other.cbegin(), other.cend(), begin());
+            copy_all(other);
         }
 
-        constexpr fixed_vector(fixed_vector&& other) noexcept
-            requires(std::is_trivially_move_constructible_v<T>)
+        fixed_vector(fixed_vector&&) noexcept
+            requires(std::is_trivially_move_constructible_v<value_type>)
         = default;
 
         constexpr fixed_vector(fixed_vector&& other) noexcept
         {
-            move_all(std::move(other));
+            if (this != std::addressof(other))
+                LLEC_LIKELY
+                {
+                    relocate_all(std::move(other));
+                }
         }
 
-        constexpr fixed_vector& operator=(fixed_vector&&) noexcept
-            requires(std::is_trivially_move_assignable_v<value_type>)
+        fixed_vector& operator=(fixed_vector&&) noexcept
+            requires(std::is_move_assignable_v<value_type>)
         = default;
 
         constexpr fixed_vector& operator=(fixed_vector&& other) noexcept
         {
-            move_all(std::move(other));
+            if (this != std::addressof(other))
+                LLEC_LIKELY
+                {
+                    // once destroyed, the memory is uninitialized that means we can do safe relocations
+                    clear();
+                    relocate_all(std::move(other));
+                }
             return *this;
         }
 
@@ -261,7 +272,7 @@ namespace llec
             {
                 if constexpr (traits::trivially_relocatable<value_type>)
                 {
-                    std::memcpy(std::addressof(*iterator_adapter(pos)), std::addressof(*(pos + 1)),
+                    memory::memcpy(std::addressof(*iterator_adapter(pos)), std::addressof(*(pos + 1)),
                                 std::distance((pos + 1), itEnd) * sizeof(value_type));
                 }
                 else
@@ -314,7 +325,11 @@ namespace llec
         /// @brief clears the vector i.e. all elements will destroyed and size will be set to 0
         void clear() noexcept
         {
-            erase(begin(), end());
+            if constexpr (!std::is_trivially_destructible_v<T>)
+            {
+                std::destroy(begin(), end());
+            }
+            m_count = 0;
         }
 
         /// @brief return the number of elements in the vector
@@ -421,20 +436,41 @@ namespace llec
             }
         }
 
-        constexpr void move_all(fixed_vector&& other) noexcept
+        constexpr void copy_all(const fixed_vector& other) noexcept
         {
-            if (this != std::addressof(other))
-                LLEC_LIKELY
+            if (!std::is_constant_evaluated())
+            {
+                if constexpr (std::is_trivially_copyable_v<value_type>)
                 {
-                    if (m_count)
-                        LLEC_LIKELY
-                    clear();
-
-                    for (size_type i = 0; i < other.m_count; i++)
-                        insert(begin() + i, std::move(*(other.begin() + i)));
-
-                    other.m_count = 0;
+                    std::memcpy(get_data_address(), other.get_data_address(), other.m_count * sizeof(value_type));
                 }
+                else
+                {
+                    std::copy(other.cbegin(), other.cend(), begin());
+                }
+            }
+            else
+            {
+                std::copy(other.cbegin(), other.cend(), begin());
+            }
+            m_count = other.m_count;
+        }
+
+        constexpr void relocate_all(fixed_vector&& other) noexcept
+        {
+            if constexpr (traits::relocatable<value_type>)
+            {
+                memory::relocate(other.begin(), other.end(), begin());
+                // relocation already moves and destroys so we can set other's count to zero
+                m_count = std::exchange(other.m_count, 0);
+            }
+            else
+            {
+                memory::uninitialized_move(other.begin(), other.end(), begin());
+                // not setting other's m_count to zero so that other's destructor
+                // can destroy all the elements
+                m_count = other.m_count;
+            }
         }
 
       private:

@@ -20,6 +20,12 @@
 #error llec error: minimum c++20 required!
 #endif
 
+#if (LLEC_CPP_VER == 202002L)
+#define LLEC_CPP20
+#else //(LLEC_CPP_VER == ???)
+#define LLEC_CPP23
+#endif
+
 #if (_WIN32 || _WIN64)
 #define LLEC_PLATFORM_WINDOWS
 #elif defined(__linux__)
@@ -109,7 +115,10 @@ namespace llec
         concept u32_64_integral = is_u32_v<T> || is_u64_v<T>;
         template <typename T>
         concept trivially_relocatable =
-            std::is_trivially_move_constructible_v<T> && std::is_trivially_copy_constructible_v<T> && std::is_trivially_destructible_v<T>;
+            (std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>) || std::is_trivially_copyable_v<T>;
+        template <typename T>
+        concept relocatable =
+            std::is_move_constructible_v<T> && std::is_destructible_v<T>;
 
     } // namespace traits
 
