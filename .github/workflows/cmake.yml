@@ -9,7 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  COMPILER: g++-12
+  COMPILER: clang++-14
   CXX_STANDARD: 20
 
 jobs:
