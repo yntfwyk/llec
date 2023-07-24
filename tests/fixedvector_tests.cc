@@ -430,18 +430,18 @@ TEST_CASE("Clear", "[fixed_vector]")
 
 TEST_CASE("Move operations", "[fixed_vector]")
 {
-    SECTION("Move constructor")
+    SECTION("Constructor")
     {
-        llec::fixed_vector<std::string, 5> vec = llec::fixed_vector<std::string, 5>{"1", "2", "3", "4", "5"};
+        llec::fixed_vector<std::string, 5> vec = llec::fixed_vector<std::string, 5>{s_testString + "1", s_testString + "2", s_testString + "3", s_testString + "4", s_testString + "5"};
         llec::s32 i{1};
         for (auto&& elem : vec)
         {
-            CHECK(elem == std::to_string(i++));
+            CHECK(elem == s_testString + std::to_string(i++));
         }
         CHECK(vec.size() == vec.capacity());
     }
 
-    SECTION("Move assignment")
+    SECTION("Assignment")
     {
         llec::fixed_vector<std::string, 5> vec;
         for (llec::s32 i = 0; i < vec.capacity(); i++)
@@ -461,7 +461,7 @@ TEST_CASE("Move operations", "[fixed_vector]")
 
 TEST_CASE("Move operations", "[fixed_vector][trivial]")
 {
-    SECTION("Move constructor")
+    SECTION("Constructor")
     {
         llec::fixed_vector<int, 5> vec = llec::fixed_vector<int, 5>{1, 2, 3, 4, 5};
         llec::s32 i{1};
@@ -472,7 +472,7 @@ TEST_CASE("Move operations", "[fixed_vector][trivial]")
         CHECK(vec.size() == vec.capacity());
     }
 
-    SECTION("Move assignment")
+    SECTION("Assignment")
     {
         llec::fixed_vector<int, 5> vec;
         for (llec::s32 i = 0; i < vec.capacity(); i++)
@@ -487,5 +487,66 @@ TEST_CASE("Move operations", "[fixed_vector][trivial]")
             CHECK(elem == i++);
         }
         CHECK(vec1.size() == vec1.capacity());
+    }
+}
+
+TEST_CASE("Copy operations", "[fixed_vector]")
+{
+    SECTION("Constructor")
+    {
+        llec::fixed_vector<std::string, 5> vec{s_testString + "1", s_testString + "2", s_testString + "3",
+                                               s_testString + "4", s_testString + "5"};
+        llec::fixed_vector<std::string, 5> vec1 = vec;
+        for (llec::s32 i = 0; i < vec.size(); i++)
+        {
+            CHECK(vec[i] == vec1[i]);
+        }
+        CHECK(vec.size() == vec1.size());
+    }
+
+    SECTION("Assignment")
+    {
+        llec::fixed_vector<std::string, 5> vec;
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
+        {
+            vec.emplace_back(s_testString + std::to_string(i));
+        }
+        decltype(vec) vec1;
+        vec1 = vec;
+        for (llec::s32 i = 0; i < vec.size(); i++)
+        {
+            CHECK(vec[i] == vec1[i]);
+        }
+        CHECK(vec.size() == vec1.size());
+    }
+}
+
+TEST_CASE("Copy operations", "[fixed_vector][trivial]")
+{
+    SECTION("Constructor")
+    {
+        llec::fixed_vector<int, 5> vec1{1, 2, 3, 4, 5};
+        llec::fixed_vector<int, 5> vec = vec1;
+        for (llec::s32 i = 0; i < vec.size(); i++)
+        {
+            CHECK(vec[i] == vec1[i]);
+        }
+        CHECK(vec.size() == vec1.size());
+    }
+
+    SECTION("Assignment")
+    {
+        llec::fixed_vector<int, 5> vec;
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
+        {
+            vec.emplace_back(i);
+        }
+        decltype(vec) vec1;
+        vec1 = std::move(vec);
+        for (llec::s32 i = 0; i < vec.size(); i++)
+        {
+            CHECK(vec[i] == vec1[i]);
+        }
+        CHECK(vec.size() == vec1.size());
     }
 }

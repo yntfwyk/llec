@@ -68,6 +68,7 @@ namespace llec
         constexpr fixed_vector& operator=(const fixed_vector& other) noexcept
         {
             copy_all(other);
+            return *this;
         }
 
         fixed_vector(fixed_vector&&) noexcept
@@ -435,8 +436,12 @@ namespace llec
 
         constexpr void copy_all(const fixed_vector& other) noexcept
         {
-            memory::uninitialized_copy(other.cbegin(), other.cend(), begin());
-            m_count = other.m_count;
+            if (this != std::addressof(other))
+                LLEC_LIKELY
+                {
+                    memory::uninitialized_copy(other.cbegin(), other.cend(), begin());
+                    m_count = other.m_count;
+                }
         }
 
         constexpr void relocate_all(fixed_vector&& other) noexcept

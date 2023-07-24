@@ -66,7 +66,7 @@ namespace llec
 
         constexpr fixed_object_pool(const fixed_object_pool& other) noexcept
         {
-            copy_all();
+            copy_all(other);
         }
 
         fixed_object_pool& operator=(const fixed_object_pool&) noexcept
@@ -75,7 +75,7 @@ namespace llec
 
         constexpr fixed_object_pool& operator=(const fixed_object_pool& other) noexcept
         {
-            copy_all();
+            copy_all(other);
             return *this;
         }
 
@@ -85,7 +85,7 @@ namespace llec
 
         constexpr fixed_object_pool(fixed_object_pool&& other) noexcept
         {
-            relocate_all();
+            relocate_all(std::move(other));
         }
 
         fixed_object_pool& operator=(fixed_object_pool&&) noexcept
@@ -94,20 +94,8 @@ namespace llec
 
         constexpr fixed_object_pool& operator=(fixed_object_pool&& other) noexcept
         {
-            relocate_all();
+            relocate_all(std::move(other));
             return *this;
-        }
-
-        /// @brief inserts an element into the container
-        /// @param value data to insert (lvalue)
-        /// @return handle associated with the data
-        constexpr handle insert(const value_type& value) noexcept
-        {
-            const size_type dataIndex = make_data();
-            const auto& slot = m_indices[dataIndex];
-            m_erase[slot.id] = dataIndex;
-            std::construct_at(get_data_address(m_count - 1), value);
-            return {dataIndex, slot.generation};
         }
 
         /// @brief emplaces and element to the end of the container
@@ -124,6 +112,14 @@ namespace llec
             // uninitialized move
             std::construct_at(get_data_address(m_count - 1), std::forward<Args>(args)...);
             return {dataIndex, slot.generation};
+        }
+
+        /// @brief inserts an element into the container
+        /// @param value data to insert (lvalue)
+        /// @return handle associated with the data
+        constexpr handle insert(const value_type& value) noexcept
+        {
+            return emplace(value);
         }
 
         /// @brief inserts an element into the container
@@ -176,7 +172,7 @@ namespace llec
 
             if constexpr (!std::is_trivially_destructible_v<value_type>)
             {
-                std::destroy_n(get_data_address(), m_count);
+                std::destroy_n(begin(), m_count);
             }
 
             m_count = 0;
@@ -256,6 +252,11 @@ namespace llec
       private:
         constexpr void init_index_array() noexcept
         {
+#ifdef LLEC_COMPILER_CLANG
+#pragma clang loop vectorize(assume_safety)
+#elif defined(LLEC_COMPILER_GCC)
+#pragma GCC ivdep
+#endif // LLEC_COMPILER_CLANG
             for (size_type i = 0; i < Capacity; i++)
             {
                 m_indices[i].id = i + 1;
@@ -298,8 +299,8 @@ namespace llec
                 LLEC_LIKELY
                 {
                     memory::uninitialized_copy(other.begin(), other.end(), begin());
-                    memory::uninitialized_copy(other.m_erase, other.m_erase + other.m_count, m_erase);
-                    memory::uninitialized_copy(other.m_indices, other.m_indices + capacity(), m_indices);
+                    memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
                     m_count = other.m_count;
                     m_generation = other.m_generation;
                     m_freeList = other.m_freeList;
@@ -314,8 +315,8 @@ namespace llec
                     if constexpr (traits::relocatable<value_type>)
                     {
                         memory::relocate(other.begin(), other.end(), begin());
-                        memory::relocate(other.m_erase, other.m_erase + other.m_count, m_erase);
-                        memory::relocate(other.m_indices, other.m_indices + capacity(), m_indices);
+                        memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
                         m_count = std::exchange(other.m_count, 0);
                         m_generation = std::exchange(other.m_generation, 0);
                         m_freeList = std::exchange(other.m_freeList, 0);
@@ -323,8 +324,8 @@ namespace llec
                     else
                     {
                         memory::uninitialized_move(other.begin(), other.end(), begin());
-                        memory::uninitialized_move(other.m_erase, other.m_erase + other.m_count, m_erase);
-                        memory::uninitialized_move(other.m_indices, other.m_indices + capacity(), m_indices);
+                        memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
                         m_count = other.m_count;
                         m_generation = other.m_generation;
                         m_freeList = other.m_freeList;
