@@ -179,7 +179,8 @@ TEST_CASE("Erase", "[fixed_vector][trivial]")
     }
 
     CHECK(vec.size() == (vec.end() - vec.begin()));
-    vec.erase(vec.end() - 1);
+    vec.erase(vec.end() - 2);
+    CHECK(*(vec.end() - 1) == 9);
     CHECK(vec.size() == 4);
 }
 
@@ -207,8 +208,8 @@ TEST_CASE("Range erase", "[fixed_vector][trivial]")
 TEST_CASE("Range erase", "[fixed_vector]")
 {
     llec::fixed_vector<std::string, 10> vec{s_testString + std::to_string(0), s_testString + std::to_string(1),
-                                             s_testString + std::to_string(2), s_testString + std::to_string(3),
-                                             s_testString + std::to_string(4)};
+                                            s_testString + std::to_string(2), s_testString + std::to_string(3),
+                                            s_testString + std::to_string(4)};
 
     vec.erase(vec.begin());
     vec.erase(vec.begin(), vec.end() - 1);
@@ -223,7 +224,7 @@ TEST_CASE("Insert", "[fixed_vector]")
     {
         vec.insert(vec.begin(), std::to_string(i));
     }
-    
+
     vec.insert(vec.end(), std::to_string(4));
     vec.insert(vec.begin(), std::to_string(2));
     vec.insert(vec.begin() + 2, std::to_string(3));
@@ -245,7 +246,7 @@ TEST_CASE("Insert", "[fixed_vector][trivial]")
     vec.insert(vec.end(), 4);
     vec.insert(vec.begin(), 2);
     vec.insert(vec.begin() + 2, 3);
-    
+
     CHECK(vec.size() == (vec.end() - vec.begin()));
     CHECK(vec.size() == 5);
     CHECK(*(vec.end() - 1) == 4);
@@ -421,7 +422,7 @@ TEST_CASE("Clear", "[fixed_vector]")
     llec::fixed_vector<std::string, 5> vec;
     for (llec::s32 i = 0; i < vec.capacity(); i++)
     {
-        vec.emplace_back(std::to_string(i));
+        vec.emplace_back(s_testString + std::to_string(i));
     }
     vec.clear();
     CHECK(vec.size() == 0);
@@ -447,11 +448,43 @@ TEST_CASE("Move operations", "[fixed_vector]")
         {
             vec.emplace_back(std::to_string(i));
         }
-        decltype(vec) vec1 = std::move(vec);
+        decltype(vec) vec1;
+        vec1 = std::move(vec);
         llec::s32 i{};
         for (auto&& elem : vec1)
         {
             CHECK(elem == std::to_string(i++));
+        }
+        CHECK(vec1.size() == vec1.capacity());
+    }
+}
+
+TEST_CASE("Move operations", "[fixed_vector][trivial]")
+{
+    SECTION("Move constructor")
+    {
+        llec::fixed_vector<int, 5> vec = llec::fixed_vector<int, 5>{1, 2, 3, 4, 5};
+        llec::s32 i{1};
+        for (auto&& elem : vec)
+        {
+            CHECK(elem == i++);
+        }
+        CHECK(vec.size() == vec.capacity());
+    }
+
+    SECTION("Move assignment")
+    {
+        llec::fixed_vector<int, 5> vec;
+        for (llec::s32 i = 0; i < vec.capacity(); i++)
+        {
+            vec.emplace_back(i);
+        }
+        decltype(vec) vec1;
+        vec1 = std::move(vec);
+        llec::s32 i{};
+        for (auto&& elem : vec1)
+        {
+            CHECK(elem == i++);
         }
         CHECK(vec1.size() == vec1.capacity());
     }

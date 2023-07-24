@@ -46,14 +46,21 @@ namespace llec::memory
     template <class InputIt, class OutputIt>
     constexpr OutputIt uninitialized_copy(InputIt first, InputIt last, OutputIt destBegin) noexcept
     {
-        using T = typename std::iterator_traits<OutputIt>::value_type;
-        OutputIt current = destBegin;
-        for (; first != last; ++first, (void)++current)
-            std::construct_at(std::addressof(*current), *first);
-        return current;
+        if (std::is_constant_evaluated())
+        {
+            using T = typename std::iterator_traits<OutputIt>::value_type;
+            OutputIt current = destBegin;
+            for (; first != last; ++first, (void)++current)
+                std::construct_at(std::addressof(*current), *first);
+            return current;
+        }
+        else
+        {
+            return std::uninitialized_copy(first, last, destBegin);
+        }
     }
-    
-    /// @brief constexpr uninitialized_copy
+
+    /// @brief constexpr uninitialized_move
     /// @tparam InputIt
     /// @tparam OutputIt
     /// @param first

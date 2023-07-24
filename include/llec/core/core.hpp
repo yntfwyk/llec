@@ -1,10 +1,10 @@
 /*
-* core.hpp
-* core preprocessor macros, traits and includes.
-*/
+ * core.hpp
+ * core preprocessor macros, traits and includes.
+ */
 #pragma once
 
-#if defined(__clang__) 
+#if defined(__clang__)
 #define LLEC_COMPILER_CLANG
 #define LLEC_CPP_VER __cplusplus
 #elif defined(__GNUC__)
@@ -34,14 +34,14 @@
 #define LLEC_PLATFORM_APPLE
 #endif // _WIN32
 
+#include <algorithm>
+#include <bit>
 #include <cstddef>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <type_traits>
 #include <utility>
-#include <bit>
-#include <limits>
-#include <algorithm>
 
 #include <concepts>
 
@@ -114,11 +114,11 @@ namespace llec
         template <typename T>
         concept u32_64_integral = is_u32_v<T> || is_u64_v<T>;
         template <typename T>
-        concept trivially_relocatable =
-            (std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>) || std::is_trivially_copyable_v<T>;
+        concept trivially_relocatable = (std::is_trivially_move_constructible_v<T> &&
+                                         std::is_trivially_destructible_v<T>) ||
+                                        std::is_trivially_copyable_v<T>;
         template <typename T>
-        concept relocatable =
-            std::is_move_constructible_v<T> && std::is_destructible_v<T>;
+        concept relocatable = std::is_move_constructible_v<T> && std::is_destructible_v<T>;
 
     } // namespace traits
 

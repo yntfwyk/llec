@@ -84,7 +84,7 @@ namespace llec
         }
 
         fixed_vector& operator=(fixed_vector&&) noexcept
-            requires(std::is_move_assignable_v<value_type>)
+            requires(std::is_trivially_move_assignable_v<value_type>)
         = default;
 
         constexpr fixed_vector& operator=(fixed_vector&& other) noexcept
@@ -159,9 +159,6 @@ namespace llec
                 }
                 else
                 {
-                    // end() is uninitialized memory so we relocate the last element here
-                    // memory::relocate(std::addressof(*end()), std::addressof(*(end() - 1)));
-                    // memory::relocate(iterator_adapter(_pos), end() - 1, iterator_adapter(_pos + 1));
                     memory::relocate_backward(iterator_adapter(pos), end(), end() + 1);
                 }
                 std::construct_at(std::addressof(*_pos), std::forward<Args>(args)...);
@@ -273,7 +270,7 @@ namespace llec
                 if constexpr (traits::trivially_relocatable<value_type>)
                 {
                     memory::memcpy(std::addressof(*iterator_adapter(pos)), std::addressof(*(pos + 1)),
-                                std::distance((pos + 1), itEnd) * sizeof(value_type));
+                                   std::distance((pos + 1), itEnd) * sizeof(value_type));
                 }
                 else
                 {
@@ -438,21 +435,7 @@ namespace llec
 
         constexpr void copy_all(const fixed_vector& other) noexcept
         {
-            if (!std::is_constant_evaluated())
-            {
-                if constexpr (std::is_trivially_copyable_v<value_type>)
-                {
-                    std::memcpy(get_data_address(), other.get_data_address(), other.m_count * sizeof(value_type));
-                }
-                else
-                {
-                    std::copy(other.cbegin(), other.cend(), begin());
-                }
-            }
-            else
-            {
-                std::copy(other.cbegin(), other.cend(), begin());
-            }
+            memory::uninitialized_copy(other.cbegin(), other.cend(), begin());
             m_count = other.m_count;
         }
 

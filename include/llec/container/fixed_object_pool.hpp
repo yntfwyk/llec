@@ -13,7 +13,7 @@
 
 namespace llec
 {
-    /// @brief index preservation array, or usually known as slot_map.
+    /// @brief fixed memory pool, or usually known as slot_map.
     /// This class could have been implemented using static_vector but the decision was not to add that dependency
     /// @tparam T type
     /// @tparam Capacity maximum number of elements
@@ -111,8 +111,8 @@ namespace llec
         }
 
         /// @brief emplaces and element to the end of the container
-        /// @tparam ...Args 
-        /// @param ...args 
+        /// @tparam ...Args
+        /// @param ...args
         /// @return handle associated with the data
         template <typename... Args>
         constexpr handle emplace(Args&&... args) noexcept
@@ -297,9 +297,9 @@ namespace llec
             if (this != std::addressof(other))
                 LLEC_LIKELY
                 {
-                    std::copy(other.begin(), other.end(), begin());
-                    std::copy(other.m_erase, other.m_erase + other.m_count, m_erase);
-                    std::copy(other.m_indices, other.m_indices + capacity(), m_indices);
+                    memory::uninitialized_copy(other.begin(), other.end(), begin());
+                    memory::uninitialized_copy(other.m_erase, other.m_erase + other.m_count, m_erase);
+                    memory::uninitialized_copy(other.m_indices, other.m_indices + capacity(), m_indices);
                     m_count = other.m_count;
                     m_generation = other.m_generation;
                     m_freeList = other.m_freeList;
@@ -344,7 +344,7 @@ namespace llec
         size_type m_freeList{0};
     };
 
-    /// @brief type alias for fixed_object_pool 
+    /// @brief type alias for fixed_object_pool
     /// @tparam T type
     /// @tparam Capacity maximum number of elements
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.

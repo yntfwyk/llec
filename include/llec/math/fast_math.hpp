@@ -59,7 +59,7 @@ namespace llec::fast_math
         return x - trunc<T>(x / y) * y;
     }
 
-    /// @brief Signum
+    /// @brief signum
     /// @tparam T must be integral type
     /// @param x 
     /// @return 1 for positive, -1 for negative, 0 for zero
@@ -70,5 +70,25 @@ namespace llec::fast_math
         return static_cast<T>(static_cast<s32>(x > T(0)) - static_cast<s32>(x < T(0)));
     }
 
+    /// @brief is_odd
+    /// @tparam T must be integral type
+    /// @param x 
+    /// @return true if odd else false
+    template <typename T>
+        requires std::is_integral_v<T>
+    LLEC_NODISCARD constexpr bool is_odd(T x) noexcept
+    {
+        return (x & 1);
+    }
 
+    /// @brief is_even
+    /// @tparam T must be integral type
+    /// @param x 
+    /// @return true if even else false
+    template <typename T>
+        requires std::is_integral_v<T>
+    LLEC_NODISCARD constexpr bool is_even(T x) noexcept
+    {
+        return !(x & 1);
+    }
 } // namespace llec::fast_math
