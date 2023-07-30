@@ -1,12 +1,11 @@
 /*
- * static_unordered_set.hpp
+ * small_unordered_set.hpp
  * A contiguous unordered set data structure for small data sets on the stack.
  * Insertions, deletions and search are O(n) complexity
  * Provides good performance when iterating as the data is contiguous in memory.
  */
 
 #pragma once
-#include "../core/core.hpp"
 #include "fixed_vector.hpp"
 
 namespace llec
@@ -16,7 +15,7 @@ namespace llec
     /// @tparam Capacity maximum data the structure can hold
     /// @tparam KeyEqual equal comparator
     template <typename Key, std::size_t Capacity, typename KeyEqual = std::equal_to<Key>>
-    class static_unordered_set
+    class small_unordered_set
     {
         using storage_type = fixed_vector<Key, Capacity>;
 
@@ -95,8 +94,8 @@ namespace llec
         /// @param first starting position
         /// @param last ending position
         /// @return iterator following the last removed element
-        template <typename It,
-                  typename = std::enable_if_t<std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>>>
+        template <typename It>
+            requires(std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>)
         constexpr iterator erase(It first, It last) noexcept
         {
             return m_vector.erase(first, last);
@@ -229,7 +228,7 @@ namespace llec
         }
 
       private:
-        storage_type m_vector{};
+        storage_type m_vector;
         key_equal m_eq;
     };
 } // namespace llec

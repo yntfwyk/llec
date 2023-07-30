@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "../core/core.hpp"
+#include "core/core.hpp"
 #include "private/basic_iterator.hpp"
 
 namespace llec

@@ -89,7 +89,7 @@ TEST_CASE("Erase", "[fixed_object_pool]")
 {
     llec::fop<std::string, 5> arr;
 
-    typename decltype(arr)::handle keys[5];
+    typename decltype(arr)::handle_type keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
@@ -109,7 +109,7 @@ TEST_CASE("Copy operation", "[fixed_object_pool]")
     {
         llec::fop<std::string, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert("string" + std::to_string(i));
@@ -127,7 +127,7 @@ TEST_CASE("Copy operation", "[fixed_object_pool]")
     {
         llec::fop<std::string, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert("string" + std::to_string(i));
@@ -149,7 +149,7 @@ TEST_CASE("Move operation", "[fixed_object_pool]")
     {
         llec::fop<std::string, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert("string" + std::to_string(i));
@@ -167,7 +167,7 @@ TEST_CASE("Move operation", "[fixed_object_pool]")
     {
         llec::fop<std::string, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert("string" + std::to_string(i));
@@ -202,7 +202,7 @@ TEST_CASE("Subscript", "[fixed_object_pool]")
 {
     llec::fop<std::string, 5> arr;
 
-    typename decltype(arr)::handle keys[5];
+    typename decltype(arr)::handle_type keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert("string" + std::to_string(i));
@@ -222,7 +222,7 @@ TEST_CASE("Insert", "[fixed_object_pool][trivial]")
 {
     llec::fop<llec::s32, 5> arr;
 
-    typename decltype(arr)::handle keys[5];
+    typename decltype(arr)::handle_type keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
@@ -310,7 +310,7 @@ TEST_CASE("Erase", "[fixed_object_pool][trivial]")
 {
     llec::fop<llec::s32, 5> arr;
 
-    typename decltype(arr)::handle keys[5];
+    typename decltype(arr)::handle_type keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
@@ -328,7 +328,7 @@ TEST_CASE("Subscript", "[fixed_object_pool][trivial]")
 {
     llec::fop<llec::s32, 5> arr;
 
-    typename decltype(arr)::handle keys[5];
+    typename decltype(arr)::handle_type keys[5];
     for (llec::s32 i = 0; i < arr.capacity(); i++)
     {
         keys[i] = arr.insert(i);
@@ -351,7 +351,7 @@ TEST_CASE("Move operation", "[fixed_object_pool][trivial]")
     {
         llec::fop<llec::s32, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert(i);
@@ -369,7 +369,7 @@ TEST_CASE("Move operation", "[fixed_object_pool][trivial]")
     {
         llec::fop<llec::s32, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert(i);
@@ -406,7 +406,7 @@ TEST_CASE("Copy operation", "[fixed_object_pool][trivial]")
     {
         llec::fop<llec::s32, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert(i);
@@ -424,7 +424,7 @@ TEST_CASE("Copy operation", "[fixed_object_pool][trivial]")
     {
         llec::fop<llec::s32, 5> arr;
 
-        typename decltype(arr)::handle keys[5];
+        typename decltype(arr)::handle_type keys[5];
         for (llec::s32 i = 0; i < arr.capacity(); i++)
         {
             keys[i] = arr.insert(i);

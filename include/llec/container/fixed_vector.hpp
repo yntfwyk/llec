@@ -7,10 +7,10 @@
  */
 
 #pragma once
-#include "../core/core.hpp"
-#include "../core/memory.hpp"
-#include "../private/aligned_storage.hpp"
-#include "../private/basic_iterator.hpp"
+#include "core/core.hpp"
+#include "core/memory.hpp"
+#include "private/aligned_storage.hpp"
+#include "private/basic_iterator.hpp"
 #include <algorithm>
 #include <array>
 
@@ -37,7 +37,7 @@ namespace llec
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
 
-        constexpr fixed_vector() noexcept = default;
+        fixed_vector() noexcept = default;
         ~fixed_vector() noexcept
             requires(std::is_trivially_destructible_v<T>)
         = default;
@@ -320,6 +320,34 @@ namespace llec
             return first;
         }
 
+        /// @brief front
+        /// @return first element
+        LLEC_NODISCARD constexpr reference front() noexcept
+        {
+            return *begin();
+        }
+        
+        /// @brief front
+        /// @return first element
+        LLEC_NODISCARD constexpr const_reference front() const noexcept
+        {
+            return *cbegin();
+        }
+
+        /// @brief back
+        /// @return last element
+        LLEC_NODISCARD constexpr reference back() noexcept
+        {
+            return *std::prev(end());
+        }
+        
+        /// @brief back
+        /// @return last element
+        LLEC_NODISCARD constexpr const_reference back() const noexcept
+        {
+            return *std::prev(cend());
+        }
+
         /// @brief clears the vector i.e. all elements will destroyed and size will be set to 0
         void clear() noexcept
         {
@@ -462,7 +490,7 @@ namespace llec
         }
 
       private:
-        storage_type m_data{};
+        storage_type m_data;
         size_type m_count{0};
     };
 } // namespace llec

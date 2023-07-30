@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string.h>
 
-static std::string s_testString = "The quick brown fox jumps over the lazy dog";
+static const std::string s_testString = "The quick brown fox jumps over the lazy dog";
 
 TEST_CASE("Push Back", "[fixed_vector]")
 {
@@ -305,13 +305,13 @@ TEST_CASE("Insert range", "[fixed_vector]")
     SECTION("Range insert middle")
     {
         llec::fixed_vector<std::string, 10> vec;
-        std::initializer_list<std::string> il = {"1", "2", "3", "4", "5"};
+        std::initializer_list<std::string> il = {s_testString + "1", s_testString + "2", s_testString + "3", s_testString + "4", s_testString + "5"};
         vec.insert(vec.begin(), il.begin(), il.end());
         std::initializer_list<std::string> il1 = {"6", "7", "8", "9", "10"};
         vec.insert(vec.begin() + 3, il1.begin(), il1.end());
 
         CHECK(vec.size() == 10);
-        CHECK(*(vec.end() - 1) == "5");
+        CHECK(*(vec.end() - 1) == s_testString + "5");
         CHECK(vec.size() == (vec.end() - vec.begin()));
     }
 
@@ -525,8 +525,8 @@ TEST_CASE("Copy operations", "[fixed_vector][trivial]")
 {
     SECTION("Constructor")
     {
-        llec::fixed_vector<int, 5> vec1{1, 2, 3, 4, 5};
-        llec::fixed_vector<int, 5> vec = vec1;
+        constexpr llec::fixed_vector<int, 5> vec1{1, 2, 3, 4, 5};
+        constexpr llec::fixed_vector<int, 5> vec = vec1;
         for (llec::s32 i = 0; i < vec.size(); i++)
         {
             CHECK(vec[i] == vec1[i]);

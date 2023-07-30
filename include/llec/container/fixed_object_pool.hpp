@@ -7,17 +7,16 @@
  */
 
 #pragma once
-#include "../core/memory.hpp"
-#include "../private/aligned_storage.hpp"
+#include "core/memory.hpp"
+#include "private/aligned_storage.hpp"
 #include <array>
 
 namespace llec
 {
     /// @brief fixed memory pool, or usually known as slot_map.
-    /// This class could have been implemented using static_vector but the decision was not to add that dependency
     /// @tparam T type
-    /// @tparam Capacity maximum number of elements
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.
+    /// @tparam Capacity maximum number of elements
     template <typename T, std::size_t Capacity, typename TSize = std::size_t>
     class fixed_object_pool
     {
@@ -32,13 +31,13 @@ namespace llec
         using reference = T&;
         using const_reference = const T&;
 
-        struct handle
+        struct handle_type
         {
-            size_type id{0};
-            size_type generation{0};
+            size_type id{};
+            size_type generation{};
         };
 
-        fixed_object_pool() noexcept
+        constexpr fixed_object_pool() noexcept
         {
             init_index_array();
         }
@@ -103,7 +102,7 @@ namespace llec
         /// @param ...args
         /// @return handle associated with the data
         template <typename... Args>
-        constexpr handle emplace(Args&&... args) noexcept
+        constexpr handle_type emplace(Args&&... args) noexcept
         {
             const size_type dataIndex = make_data();
             const auto& slot = m_indices[dataIndex];
@@ -117,7 +116,7 @@ namespace llec
         /// @brief inserts an element into the container
         /// @param value data to insert (lvalue)
         /// @return handle associated with the data
-        constexpr handle insert(const value_type& value) noexcept
+        constexpr handle_type insert(const value_type& value) noexcept
         {
             return emplace(value);
         }
@@ -125,7 +124,7 @@ namespace llec
         /// @brief inserts an element into the container
         /// @param value data to insert (rvalue)
         /// @return handle associated with the data
-        constexpr handle insert(value_type&& value) noexcept
+        constexpr handle_type insert(value_type&& value) noexcept
         {
             return emplace(value);
         }
@@ -133,13 +132,13 @@ namespace llec
         /// @brief removes the data from the container
         /// @param handle to remove data from the container
         /// @return 'true' if data was successfully removed, else return 'false'
-        constexpr bool erase(handle hndl) noexcept
+        constexpr bool erase(handle_type hndl) noexcept
         {
             if (!is_handle_valid(hndl))
                 LLEC_UNLIKELY
             return false;
 
-            handle& slot = m_indices[hndl.id];
+            handle_type& slot = m_indices[hndl.id];
             const size_type dataIndex = slot.id;
             std::destroy_at(get_data_address(dataIndex));
             const size_type lastIndex = m_count - 1;
@@ -195,7 +194,7 @@ namespace llec
         /// @brief checks if the handle is valid
         /// @param hndl
         /// @return 'true' if valid else returns 'false'
-        LLEC_NODISCARD constexpr bool is_handle_valid(handle hndl) const noexcept
+        LLEC_NODISCARD constexpr bool is_handle_valid(handle_type hndl) const noexcept
         {
             return (hndl.id >= 0 && hndl.id < Capacity) && (hndl.generation == m_indices[hndl.id].generation);
         }
@@ -237,13 +236,13 @@ namespace llec
             return get_data_address(m_count);
         }
 
-        LLEC_NODISCARD constexpr T& operator[](handle hndl) noexcept
+        LLEC_NODISCARD constexpr T& operator[](handle_type hndl) noexcept
         {
             LLEC_ASSERT(is_handle_valid(hndl));
             return *get_data_address(m_indices[hndl.id].id);
         }
 
-        LLEC_NODISCARD constexpr const T& operator[](handle hndl) const noexcept
+        LLEC_NODISCARD constexpr const T& operator[](handle_type hndl) const noexcept
         {
             LLEC_ASSERT(is_handle_valid(hndl));
             return *get_data_address(m_indices[hndl.id].id);
@@ -300,7 +299,7 @@ namespace llec
                 {
                     memory::uninitialized_copy(other.begin(), other.end(), begin());
                     memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
+                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
                     m_count = other.m_count;
                     m_generation = other.m_generation;
                     m_freeList = other.m_freeList;
@@ -316,7 +315,7 @@ namespace llec
                     {
                         memory::relocate(other.begin(), other.end(), begin());
                         memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
+                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
                         m_count = std::exchange(other.m_count, 0);
                         m_generation = std::exchange(other.m_generation, 0);
                         m_freeList = std::exchange(other.m_freeList, 0);
@@ -325,7 +324,7 @@ namespace llec
                     {
                         memory::uninitialized_move(other.begin(), other.end(), begin());
                         memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle));
+                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
                         m_count = other.m_count;
                         m_generation = other.m_generation;
                         m_freeList = other.m_freeList;
@@ -337,8 +336,8 @@ namespace llec
         using storage_type =
             std::conditional_t<traits::is_trivially_xstructible_v<value_type>, std::array<value_type, Capacity>,
                                details::aligned_storage_t<sizeof(value_type) * Capacity, alignof(value_type)>>;
-        storage_type m_data{};
-        std::array<handle, Capacity> m_indices{};
+        storage_type m_data;
+        std::array<handle_type, Capacity> m_indices{};
         std::array<size_type, Capacity> m_erase{};
         size_type m_generation{0};
         size_type m_count{0};

@@ -5,7 +5,7 @@
  */
 
 #pragma once
-#include "../core/core.hpp"
+#include "core/core.hpp"
 
 namespace llec::fast_math
 {
