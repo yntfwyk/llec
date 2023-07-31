@@ -133,3 +133,104 @@ TEST_CASE("Contains", "[small_unordered_set]")
     CHECK(set.contains(" !"));
     CHECK(!set.contains("world"));
 }
+
+TEST_CASE("Move", "[small_unordered_set]")
+{
+    SECTION("Construction")
+    {
+        llec::small_unordered_set<std::string, 3> set;
+        CHECK(set.size() == 0);
+        CHECK(set.capacity() == 3);
+
+        set.insert("hello");
+        set.insert(" world");
+        set.insert(" world");
+        set.insert("hello");
+        set.insert(" !");
+
+        decltype(set) set1 = std::move(set);
+        CHECK(set1.size() == set1.capacity());
+        CHECK(set1.contains(" world"));
+        CHECK(set1.contains("hello"));
+        CHECK(set1.contains(" !"));
+        CHECK(!set1.contains("world"));
+    }
+
+    SECTION("Assignment")
+    {
+        llec::small_unordered_set<std::string, 3> set;
+        CHECK(set.size() == 0);
+        CHECK(set.capacity() == 3);
+
+        set.insert("hello");
+        set.insert(" world");
+        set.insert(" world");
+        set.insert("hello");
+        set.insert(" !");
+
+        decltype(set) set1;
+        set1 = std::move(set);
+        CHECK(set1.size() == set1.capacity());
+        CHECK(set1.contains(" world"));
+        CHECK(set1.contains("hello"));
+        CHECK(set1.contains(" !"));
+        CHECK(!set1.contains("world"));
+    }
+
+}
+
+TEST_CASE("Copy", "[small_unordered_set]")
+{
+    SECTION("Construction")
+    {
+        llec::small_unordered_set<std::string, 3> set;
+        CHECK(set.size() == 0);
+        CHECK(set.capacity() == 3);
+
+        set.insert("hello");
+        set.insert(" world");
+        set.insert(" world");
+        set.insert("hello");
+        set.insert(" !");
+
+        decltype(set) set1 = set;
+        CHECK(set1.size() == set1.capacity());
+        CHECK(set1.contains(" world"));
+        CHECK(set1.contains("hello"));
+        CHECK(set1.contains(" !"));
+        CHECK(!set1.contains("world"));
+
+        CHECK(set.size() == set.capacity());
+        CHECK(set.contains(" world"));
+        CHECK(set.contains("hello"));
+        CHECK(set.contains(" !"));
+        CHECK(!set.contains("world"));
+    }
+
+    SECTION("Assignment")
+    {
+        llec::small_unordered_set<std::string, 3> set;
+        CHECK(set.size() == 0);
+        CHECK(set.capacity() == 3);
+
+        set.insert("hello");
+        set.insert(" world");
+        set.insert(" world");
+        set.insert("hello");
+        set.insert(" !");
+
+        decltype(set) set1;
+        set1 = set;
+        CHECK(set1.size() == set1.capacity());
+        CHECK(set1.contains(" world"));
+        CHECK(set1.contains("hello"));
+        CHECK(set1.contains(" !"));
+        CHECK(!set1.contains("world"));
+        
+        CHECK(set.size() == set.capacity());
+        CHECK(set.contains(" world"));
+        CHECK(set.contains("hello"));
+        CHECK(set.contains(" !"));
+        CHECK(!set.contains("world"));
+    }
+}

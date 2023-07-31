@@ -120,6 +120,112 @@ namespace llec
         template <typename T>
         concept relocatable = std::is_move_constructible_v<T> && std::is_destructible_v<T>;
 
+        template <typename T>
+        concept is_addable = requires(T a, T b) {
+                                 {
+                                     a + b
+                                     } -> std::same_as<T>;
+                             };
+        template <typename T>
+        concept is_subtractable = requires(T a, T b) {
+                                      {
+                                          a - b
+                                          } -> std::same_as<T>;
+                                  };
+        template <typename T>
+        concept is_multiplyable = requires(T a, T b) {
+                                      {
+                                          a* b
+                                          } -> std::same_as<T>;
+                                  };
+        template <typename T>
+        concept is_divideable = requires(T a, T b) {
+                                    {
+                                        a / b
+                                        } -> std::same_as<T>;
+                                };
+
+        template <typename T>
+        concept is_left_shiftable = requires(T a, T b) {
+                                        {
+                                            a << b
+                                            } -> std::same_as<T>;
+                                    };
+
+        template <typename T>
+        concept is_right_shiftable = requires(T a, T b) {
+                                         {
+                                             a >> b
+                                             } -> std::same_as<T>;
+                                     };
+
+        template <typename T>
+        concept is_orable = requires(T a, T b) {
+                                {
+                                    a | b
+                                    } -> std::same_as<T>;
+                            };
+
+        template <typename T>
+        concept is_xorable = requires(T a, T b) {
+                                 {
+                                     a ^ b
+                                     } -> std::same_as<T>;
+                             };
+
+        template <typename T>
+        concept is_add_assignable = requires(T a, T b) {
+                                        {
+                                            a += b
+                                            } -> std::same_as<T&>;
+                                    };
+        template <typename T>
+        concept is_subtract_assignable = requires(T a, T b) {
+                                             {
+                                                 a -= b
+                                                 } -> std::same_as<T&>;
+                                         };
+        template <typename T>
+        concept is_multiply_assignable = requires(T a, T b) {
+                                             {
+                                                 a *= b
+                                                 } -> std::same_as<T&>;
+                                         };
+        template <typename T>
+        concept is_divide_assignable = requires(T a, T b) {
+                                           {
+                                               a /= b
+                                               } -> std::same_as<T&>;
+                                       };
+
+        template <typename T>
+        concept is_left_shift_assignable = requires(T a, T b) {
+                                               {
+                                                   a <<= b
+                                                   } -> std::same_as<T&>;
+                                           };
+
+        template <typename T>
+        concept is_right_shift_assignable = requires(T a, T b) {
+                                                {
+                                                    a >>= b
+                                                    } -> std::same_as<T&>;
+                                            };
+
+        template <typename T>
+        concept is_or_assignable = requires(T a, T b) {
+                                       {
+                                           a |= b
+                                           } -> std::same_as<T&>;
+                                   };
+
+        template <typename T>
+        concept is_xor_assignable = requires(T a, T b) {
+                                        {
+                                            a ^= b
+                                            } -> std::same_as<T&>;
+                                    };
+
     } // namespace traits
 
 } // namespace llec

@@ -11,6 +11,7 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/core/core.hpp
     ${LLEC_INC_DIR}/core/time_capture.hpp
     ${LLEC_INC_DIR}/core/memory.hpp
+    ${LLEC_INC_DIR}/core/typed_handle.hpp
     ${LLEC_INC_DIR}/container/fixed_vector.hpp
     ${LLEC_INC_DIR}/container/fixed_string.hpp
     ${LLEC_INC_DIR}/container/fixed_object_pool.hpp
@@ -25,6 +26,7 @@ set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedvector_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedstring_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedobjectpool_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/typedhandle_tests.cc
     ${LLEC_SRC_TESTS_DIR}/smallunorderedset_tests.cc)
 
 Include(FetchContent)
