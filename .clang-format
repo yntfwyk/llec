@@ -3,3 +3,4 @@ BasedOnStyle: Microsoft
 AlwaysBreakTemplateDeclarations: Yes
 NamespaceIndentation: All
 PointerAlignment: Left
+ColumnLimit: 256
