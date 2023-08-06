@@ -20,6 +20,7 @@ namespace llec
     /// @tparam T Type
     /// @tparam Capacity Maximum number of elements the vector can hold
     template <typename T, std::size_t Capacity>
+        requires std::is_same_v<std::remove_cv_t<T>, T>
     class fixed_vector
     {
         static_assert(Capacity > 0);

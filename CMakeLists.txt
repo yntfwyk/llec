@@ -15,10 +15,11 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/container/fixed_vector.hpp
     ${LLEC_INC_DIR}/container/fixed_string.hpp
     ${LLEC_INC_DIR}/container/fixed_object_pool.hpp
-    ${LLEC_INC_DIR}/container/static_unordered_map.hpp
+    ${LLEC_INC_DIR}/container/small_unordered_map.hpp
     ${LLEC_INC_DIR}/container/small_unordered_set.hpp
     ${LLEC_INC_DIR}/math/fast_math.hpp
     ${LLEC_INC_DIR}/utility/checksum.hpp
+    ${LLEC_INC_DIR}/utility/pair.hpp
     ${LLEC_INC_DIR}/private/aligned_storage.hpp
     ${LLEC_INC_DIR}/private/basic_iterator.hpp)
 
@@ -27,6 +28,7 @@ set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedstring_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedobjectpool_tests.cc
     ${LLEC_SRC_TESTS_DIR}/typedhandle_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/smallunorderedmap_tests.cc
     ${LLEC_SRC_TESTS_DIR}/smallunorderedset_tests.cc)
 
 Include(FetchContent)
