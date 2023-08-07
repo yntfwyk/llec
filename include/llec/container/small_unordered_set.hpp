@@ -6,7 +6,8 @@
  */
 
 #pragma once
-#include "fixed_vector.hpp"
+#include "container/fixed_vector.hpp"
+#include "utility/pair.hpp"
 
 namespace llec
 {
@@ -36,7 +37,7 @@ namespace llec
         /// @param key
         /// @return std:pair of the position if the element was successfully inserted
         /// and a bool which is set to true on a successful insertion, else set to false
-        constexpr std::pair<iterator, bool> insert(const Key& key) noexcept
+        constexpr pair<iterator, bool> insert(const Key& key) noexcept
         {
             return insert_impl(key);
         }
@@ -45,7 +46,7 @@ namespace llec
         /// @param key
         /// @return std:pair of the position if the element was successfully inserted
         /// and a bool which is set to true on a successful insertion, else set to false
-        constexpr std::pair<iterator, bool> insert(Key&& key) noexcept
+        constexpr pair<iterator, bool> insert(Key&& key) noexcept
         {
             return insert_impl(std::move(key));
         }
@@ -217,7 +218,7 @@ namespace llec
 
       private:
         template <typename T>
-        LLEC_NODISCARD constexpr std::pair<iterator, bool> insert_impl(T&& value) noexcept
+        LLEC_NODISCARD constexpr pair<iterator, bool> insert_impl(T&& value) noexcept
         {
             iterator it = find(std::forward<T>(value));
             if (it != end())
