@@ -222,6 +222,12 @@ namespace llec
         };
 
         template <typename T>
+        concept is_notequal_comparable = requires(T a, T b)
+        {
+            {a != b} -> std::same_as<bool>;
+        };
+
+        template <typename T>
         concept is_lessthan_comparable = requires(T a, T b)
         {
             {a < b} -> std::same_as<bool>;

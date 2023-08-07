@@ -154,6 +154,42 @@ namespace llec
             return *this;
         }
 
+        LLEC_NODISCARD constexpr bool operator==(const typed_handle& other) const
+            requires traits::is_equal_comparable<raw_type>
+        {
+            return m_typedData == other.m_typedData;
+        }
+
+        LLEC_NODISCARD constexpr bool operator!=(const typed_handle& other) const
+            requires traits::is_notequal_comparable<raw_type>
+        {
+            return m_typedData != other.m_typedData;
+        }
+
+        LLEC_NODISCARD constexpr bool operator<(const typed_handle& other) const
+            requires traits::is_lessthan_comparable<raw_type>
+        {
+            return m_typedData < other.m_typedData;
+        }
+
+        LLEC_NODISCARD constexpr bool operator<=(const typed_handle& other) const
+            requires traits::is_lessthan_equal_comparable<raw_type>
+        {
+            return m_typedData <= other.m_typedData;
+        }
+
+        LLEC_NODISCARD constexpr bool operator>(const typed_handle& other) const
+            requires traits::is_greaterthan_comparable<raw_type>
+        {
+            return m_typedData > other.m_typedData;
+        }
+
+        LLEC_NODISCARD constexpr bool operator>=(const typed_handle& other) const
+            requires traits::is_greaterthan_equal_comparable<raw_type>
+        {
+            return m_typedData >= other.m_typedData;
+        }
+
       private:
         raw_type m_typedData;
     };
