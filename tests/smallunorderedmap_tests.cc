@@ -79,4 +79,93 @@ TEST_CASE("Erase", "[small_unordered_map]")
     CHECK(cmap.size() == map.size());
 }
 
-// TODO: add tests for copy construct, move construct, copy assignment, move assignment
+TEST_CASE("Copy", "[small_unordered_map]")
+{
+    SECTION("Construction")
+    {
+        llec::small_unordered_map<std::string, int, 10> map;
+        map["small"] = 1;
+        map["unordered"] = 2;
+        map["map"] = 3;
+        map["erasure"] = 4;
+        map["test"] = 5;
+        map["case"] = 6;
+
+        llec::small_unordered_map<std::string, int, 10> copy = map;
+
+        CHECK(copy.size() == map.size());
+
+        for (auto&& elem : copy)
+        {
+            CHECK(*(elem.second) == map[*(elem.first)]);
+        }
+    }
+
+    SECTION("Assignment")
+    {
+        llec::small_unordered_map<std::string, int, 10> map;
+        map["small"] = 1;
+        map["unordered"] = 2;
+        map["map"] = 3;
+        map["erasure"] = 4;
+        map["test"] = 5;
+        map["case"] = 6;
+
+        llec::small_unordered_map<std::string, int, 10> copy;
+
+        copy = map;
+
+        CHECK(copy.size() == map.size());
+
+        for (auto&& elem : copy)
+        {
+            CHECK(*(elem.second) == map[*(elem.first)]);
+        }
+    }
+}
+
+TEST_CASE("Move", "[small_unordered_map]")
+{
+    SECTION("Construction")
+    {
+        llec::small_unordered_map<std::string, int, 10> map;
+        map["small"] = 1;
+        map["unordered"] = 2;
+        map["map"] = 3;
+        map["erasure"] = 4;
+        map["test"] = 5;
+        map["case"] = 6;
+
+        llec::small_unordered_map<std::string, int, 10> relocated = std::move(map);
+
+        CHECK(relocated.size() == 6);
+        llec::s32 i = 0;
+        for (auto&& elem : relocated)
+        {
+            CHECK(*(elem.second) == ++i);
+        }
+    }
+
+    SECTION("Assignment")
+    {
+        llec::small_unordered_map<std::string, int, 10> map;
+        map["small"] = 1;
+        map["unordered"] = 2;
+        map["map"] = 3;
+        map["erasure"] = 4;
+        map["test"] = 5;
+        map["case"] = 6;
+
+        llec::small_unordered_map<std::string, int, 10> relocated;
+
+        relocated = std::move(map);
+
+        CHECK(relocated.size() == 6);
+
+        llec::s32 i = 0;
+        for (auto&& elem : relocated)
+        {
+            CHECK(*(elem.second) == ++i);
+        }
+    }
+}

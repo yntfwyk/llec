@@ -234,7 +234,7 @@ namespace llec
             if (auto it = find(key); it != end())
                 LLEC_LIKELY
                 {
-                    return (*it).second;
+                    return it.get_value();
                 }
             else
             {
