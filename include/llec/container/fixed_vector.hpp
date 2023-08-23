@@ -484,9 +484,17 @@ namespace llec
             else
             {
                 memory::uninitialized_move(other.begin(), other.end(), begin());
-                // not setting other's m_count to zero so that other's destructor
-                // can destroy all the elements
-                m_count = other.m_count;
+
+                if constexpr (std::is_trivially_destructible_v<value_type>)
+                {
+                    m_count = std::exchange(other.m_count, 0);
+                }
+                else
+                {
+                    // not setting other's m_count to zero so that other's destructor
+                    // can destroy all the elements
+                    m_count = other.m_count;
+                }
             }
         }
 
