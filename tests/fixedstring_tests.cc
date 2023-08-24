@@ -146,3 +146,30 @@ TEST_CASE("FixedString capacity", "[fixed_string][capacity]")
         CHECK(sstr.capacity() == 128ull);
     }
 }
+
+TEST_CASE("FixedString append", "[fixed_string][append]")
+{
+    {
+        llec::fixed_string sstr{"Hello"};
+        llec::fixed_string sstr2{" World!"};
+        CHECK(sstr.append(sstr2) == llec::fixed_string("Hello World!"));
+    }
+
+    {
+        llec::fixed_string<8> sstr{"Hello"};
+        llec::fixed_string<8> sstr2{" World!"};
+        CHECK(sstr.append(sstr2) == llec::fixed_string<8>("Hello Wo"));
+    }
+    
+    {
+        llec::fixed_string<8> sstr{"Hello"};
+        llec::fixed_string<8> sstr2{};
+        CHECK(sstr.append(sstr2) == llec::fixed_string<8>("Hello"));
+    }
+
+    {
+        llec::fixed_string<6> sstr{"Hello"};
+        llec::fixed_string<6> sstr2{" World!"};
+        CHECK(sstr.append(sstr2) == llec::fixed_string<6>("Hello"));
+    }
+}

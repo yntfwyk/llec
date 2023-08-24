@@ -48,7 +48,6 @@ namespace llec::memory
     {
         if (std::is_constant_evaluated())
         {
-            using T = typename std::iterator_traits<OutputIt>::value_type;
             OutputIt current = destBegin;
             for (; first != last; ++first, (void)++current)
                 std::construct_at(std::addressof(*current), *first);
@@ -70,7 +69,6 @@ namespace llec::memory
     template <class InputIt, class OutputIt>
     constexpr OutputIt uninitialized_move(InputIt first, InputIt last, OutputIt destBegin) noexcept
     {
-        using T = typename std::iterator_traits<OutputIt>::value_type;
         OutputIt current = destBegin;
         for (; first != last; ++first, (void)++current)
             std::construct_at(std::addressof(*current), std::move(*first));

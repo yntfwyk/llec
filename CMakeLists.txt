@@ -12,6 +12,7 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/core/time_capture.hpp
     ${LLEC_INC_DIR}/core/memory.hpp
     ${LLEC_INC_DIR}/core/typed_handle.hpp
+    ${LLEC_INC_DIR}/core/fancy_print.hpp
     ${LLEC_INC_DIR}/container/fixed_vector.hpp
     ${LLEC_INC_DIR}/container/fixed_string.hpp
     ${LLEC_INC_DIR}/container/fixed_object_pool.hpp

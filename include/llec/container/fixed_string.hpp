@@ -9,7 +9,7 @@
 
 namespace llec
 {
-    /// @brief A basic string class focusing on stack and compile-time operations.
+    /// @brief A basic null terminated string class focusing on stack and compile-time operations.
     /// @tparam Capacity constant size
     template <std::size_t Capacity = 512ull>
     class fixed_string
@@ -24,8 +24,9 @@ namespace llec
         /// @param string takes a const char* string
         explicit constexpr fixed_string(const char* string) noexcept
         {
-            if (!string) LLEC_UNLIKELY
-                return;
+            if (!string)
+                LLEC_UNLIKELY
+            return;
             const std::size_t len = fixed_string_helper::const_string_length(string);
             if (!len)
                 clear();
@@ -35,14 +36,15 @@ namespace llec
 
         constexpr fixed_string& operator=(const char* string) noexcept
         {
-            if (string) LLEC_LIKELY
-            {
-                const std::size_t len = fixed_string_helper::const_string_length(string);
-                if (!len)
-                    clear();
-                else
-                    fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
-            }
+            if (string)
+                LLEC_LIKELY
+                {
+                    const std::size_t len = fixed_string_helper::const_string_length(string);
+                    if (!len)
+                        clear();
+                    else
+                        fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+                }
             return *this;
         }
 
@@ -58,8 +60,10 @@ namespace llec
 
         constexpr fixed_string operator+(const fixed_string& other) const noexcept
         {
-            if (other.is_empty()) LLEC_UNLIKELY
-                return *this;
+            if (other.is_empty())
+                LLEC_UNLIKELY
+            return {};
+
             const std::size_t len = length();
             const std::size_t availability = len < Capacity - 1u ? Capacity - 1u - len : 0u;
             if (!availability)
@@ -156,6 +160,37 @@ namespace llec
                 }
             }
             return -1;
+        }
+
+        /// @brief appends string to the end
+        /// @param str string to append
+        /// @param n number of characters to append
+        /// @return reference to the result
+        constexpr fixed_string& append(const char* str, std::size_t n) noexcept
+        {
+            LLEC_ASSERT(str);
+            const auto size = length();
+            const std::size_t availability = Capacity - size - 1;
+            const auto sizeStr = n;
+            const auto copySize = availability >= sizeStr ? sizeStr : availability;
+            fixed_string_helper::copy_n(std::addressof(m_string[size]), copySize, str);
+            return *this;
+        }
+
+        /// @brief appends string to the end
+        /// @param str string to append
+        /// @return reference to the result
+        constexpr fixed_string& append(const char* str) noexcept
+        {
+            return append(str, fixed_string_helper::const_string_length(str));
+        }
+
+        /// @brief appends string to the end
+        /// @param str string to append
+        /// @return reference to the result
+        constexpr fixed_string& append(const fixed_string& str) noexcept
+        {
+            return append(str.data(), fixed_string_helper::const_string_length(str.data()));
         }
 
         LLEC_NODISCARD constexpr const_iterator cbegin() const noexcept

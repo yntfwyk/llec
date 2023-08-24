@@ -46,6 +46,10 @@
 
 #include <concepts>
 
+#ifdef LLEC_PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
+
 #ifdef LLEC_DEBUG_BUILD
 #include <assert.h>
 #define LLEC_ASSERT(x) assert(x)
