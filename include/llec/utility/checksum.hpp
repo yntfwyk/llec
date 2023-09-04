@@ -47,3 +47,22 @@ namespace llec::checksum
     }
 
 } // namespace llec::checksum
+
+constexpr llec::u32 operator""_adler(const char* str, [[maybe_unused]] std::size_t len) noexcept
+{
+    const std::string_view sv{str};
+    return llec::checksum::adler32(sv.data(), sv.length());
+}
+
+constexpr llec::u32 operator""_fnv32(const char* str, [[maybe_unused]] std::size_t len) noexcept
+{
+    const std::string_view sv{str};
+    return llec::checksum::fnv1a(sv.data(), sv.length());
+}
+
+constexpr llec::u64 operator""_fnv64(const char* str, [[maybe_unused]] std::size_t len) noexcept
+{
+    const std::string_view sv{str};
+    return llec::checksum::fnv1a<llec::u64>(sv.data(), sv.length());
+}
+
