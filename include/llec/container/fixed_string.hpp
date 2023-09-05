@@ -164,7 +164,7 @@ namespace llec
 
         /// @brief appends string to the end
         /// @param str string to append
-        /// @param n number of characters to append
+        /// @param n number of characters to append (must be <= length())
         /// @return reference to the result
         constexpr fixed_string& append(const char* str, std::size_t n) noexcept
         {
