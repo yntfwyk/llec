@@ -2,7 +2,12 @@
  * core.hpp
  * core preprocessor macros, traits and includes.
  */
+
 #pragma once
+
+#define LLEC_VERSION_MAJOR  1
+#define LLEC_VERSION_MINOR  0
+#define LLEC_VEERSION_PATCH 0
 
 #if defined(__clang__)
 #define LLEC_COMPILER_CLANG
@@ -260,6 +265,21 @@ namespace llec
         {
             {a <=> b};
         };
+
+        template <typename T>
+        concept is_vector_like = requires(T a, typename T::size_type n, const typename T::value_type& v, typename T::iterator it)
+        {
+            typename T::value_type;
+            typename T::iterator;
+            typename T::const_iterator;
+            {a.begin()} -> std::same_as<typename T::iterator>;
+            {a.end()} -> std::same_as<typename T::iterator>;
+            {a[n]} -> std::same_as<typename T::value_type&>;
+            {a.push_back(v)};
+            {a.erase(it)};
+            {a.size()};
+            {a.data()};
+        } && (std::random_access_iterator<typename T::iterator> || std::contiguous_iterator<typename T::iterator>);
 
         // clang-format on
     } // namespace traits

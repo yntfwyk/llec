@@ -229,7 +229,7 @@ namespace llec
             return const_iterator{m_keys.cend(), m_values.cend()};
         }
 
-        LLEC_NODISCARD constexpr mapped_type& operator[](const key_type& key)
+        LLEC_NODISCARD constexpr mapped_type& operator[](const key_type& key) noexcept
         {
             if (auto it = find(key); it != end())
                 LLEC_LIKELY
@@ -244,7 +244,7 @@ namespace llec
             }
         }
 
-        LLEC_NODISCARD constexpr mapped_type& operator[](key_type&& key)
+        LLEC_NODISCARD constexpr mapped_type& operator[](key_type&& key) noexcept
         {
             if (auto it = find(key); it != end())
                 LLEC_LIKELY
