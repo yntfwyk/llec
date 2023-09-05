@@ -359,6 +359,20 @@ namespace llec
             m_count = 0;
         }
 
+        /// @brief returns pointer to raw data
+        /// @return
+        T* data() noexcept
+        {
+            return get_data_address();
+        }
+
+        /// @brief returns const pointer to raw data
+        /// @return
+        const T* data() const noexcept
+        {
+            return get_data_address();
+        }
+        
         /// @brief return the number of elements in the vector
         /// @return
         LLEC_NODISCARD constexpr size_type size() const noexcept

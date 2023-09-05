@@ -14,6 +14,7 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/core/typed_handle.hpp
     ${LLEC_INC_DIR}/core/fancy_print.hpp
     ${LLEC_INC_DIR}/container/fixed_vector.hpp
+    ${LLEC_INC_DIR}/container/fused_vector.hpp
     ${LLEC_INC_DIR}/container/fixed_string.hpp
     ${LLEC_INC_DIR}/container/fixed_object_pool.hpp
     ${LLEC_INC_DIR}/container/small_unordered_map.hpp
@@ -26,6 +27,7 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
 
 set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedvector_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/fusedvector_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedstring_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedobjectpool_tests.cc
     ${LLEC_SRC_TESTS_DIR}/typedhandle_tests.cc
