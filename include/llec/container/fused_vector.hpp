@@ -34,7 +34,7 @@ namespace llec
         using fused_containers_t = std::tuple<component_container<Types>...>;
         static_assert(N > 1, "llec error: template arguments can not be less than two!");
         static_assert(traits::is_vector_like<std::tuple_element_t<0, fused_containers_t>>, "llec error: template argument FVContainer must be a vector-like type!");
-        static_assert(std::is_same_v<typename FVContainer::container_tag, fused_vector_container_tag>, "llec error: container not compatible look in fusedvector_tests.cc for examples!");
+        static_assert(std::is_same_v<typename FVContainer::container_tag, fused_vector_container_tag>, "llec error: container not compatible see fusedvector_tests.cc for examples!");
 
       public:
         /// @brief returns the number of components specified in compile-time
