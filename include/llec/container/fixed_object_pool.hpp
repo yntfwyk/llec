@@ -18,6 +18,7 @@ namespace llec
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.
     /// @tparam Capacity maximum number of elements
     template <typename T, std::size_t Capacity, typename TSize = std::size_t>
+        requires std::is_same_v<std::remove_cv_t<T>, T>
     class fixed_object_pool
     {
       public:
@@ -102,7 +103,7 @@ namespace llec
         /// @param ...args
         /// @return handle associated with the data
         template <typename... Args>
-        constexpr handle_type emplace(Args&&... args) noexcept
+        constexpr const handle_type emplace(Args&&... args) noexcept
         {
             const size_type dataIndex = make_data();
             const auto& slot = m_indices[dataIndex];
@@ -116,7 +117,7 @@ namespace llec
         /// @brief inserts an element into the container
         /// @param value data to insert (lvalue)
         /// @return handle associated with the data
-        constexpr handle_type insert(const value_type& value) noexcept
+        constexpr const handle_type insert(const value_type& value) noexcept
         {
             return emplace(value);
         }
@@ -124,7 +125,7 @@ namespace llec
         /// @brief inserts an element into the container
         /// @param value data to insert (rvalue)
         /// @return handle associated with the data
-        constexpr handle_type insert(value_type&& value) noexcept
+        constexpr const handle_type insert(value_type&& value) noexcept
         {
             return emplace(value);
         }
@@ -320,7 +321,7 @@ namespace llec
                         m_generation = std::exchange(other.m_generation, 0);
                         m_freeList = std::exchange(other.m_freeList, 0);
                     }
-                    else
+                    else if constexpr (traits::trivially_relocatable<value_type>)
                     {
                         memory::uninitialized_move(other.begin(), other.end(), begin());
                         memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));

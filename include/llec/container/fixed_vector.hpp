@@ -495,7 +495,7 @@ namespace llec
                 // relocation already moves and destroys so we can set other's count to zero
                 m_count = std::exchange(other.m_count, 0);
             }
-            else
+            else if constexpr (traits::trivially_relocatable<value_type>)
             {
                 memory::uninitialized_move(other.begin(), other.end(), begin());
 
