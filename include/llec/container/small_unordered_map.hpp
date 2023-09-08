@@ -82,7 +82,8 @@ namespace llec
         /// @return iterator following the last removed element
         constexpr iterator erase(iterator it) noexcept
         {
-            return iterator{typename iterator::key_iterator{std::addressof(*(m_keys.erase(it.get_key_iterator())))}, m_values.erase(it.get_value_iterator())};
+            return iterator{typename iterator::key_iterator{std::addressof(*(m_keys.erase(it.get_key_iterator())))},
+                            m_values.erase(it.get_value_iterator())};
         }
 
         /// @brief removes a value at a position
@@ -100,10 +101,12 @@ namespace llec
         /// @param last ending position
         /// @return iterator following the last removed element
         template <typename It>
-            requires(std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>)
+        requires(std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>)
         constexpr iterator erase(It first, It last) noexcept
         {
-            return {typename iterator::key_iterator{std::addressof(*(m_keys.erase(first.get_key_iterator(), last.get_key_iterator())))}, m_values.erase(first.get_value_iterator(), last.get_value_iterator())};
+            return {typename iterator::key_iterator{
+                        std::addressof(*(m_keys.erase(first.get_key_iterator(), last.get_key_iterator())))},
+                    m_values.erase(first.get_value_iterator(), last.get_value_iterator())};
         }
 
         /// @brief removes a value matching the key
@@ -232,10 +235,9 @@ namespace llec
         LLEC_NODISCARD constexpr mapped_type& operator[](const key_type& key) noexcept
         {
             if (auto it = find(key); it != end())
-                LLEC_LIKELY
-                {
-                    return it.get_value();
-                }
+            {
+                return it.get_value();
+            }
             else
             {
                 m_keys.push_back(key);
@@ -247,10 +249,9 @@ namespace llec
         LLEC_NODISCARD constexpr mapped_type& operator[](key_type&& key) noexcept
         {
             if (auto it = find(key); it != end())
-                LLEC_LIKELY
-                {
-                    return it.get_value();
-                }
+            {
+                return it.get_value();
+            }
             else
             {
                 m_keys.push_back(std::move(key));
@@ -264,7 +265,8 @@ namespace llec
         class small_umap_iterator
         {
             using key_iterator = typename storage_type<K>::const_iterator;
-            using value_iterator = std::conditional_t<IsConst, typename storage_type<V>::const_iterator, typename storage_type<V>::iterator>;
+            using value_iterator = std::conditional_t<IsConst, typename storage_type<V>::const_iterator,
+                                                      typename storage_type<V>::iterator>;
 
           public:
             using iterator_concept = typename std::contiguous_iterator_tag;
@@ -275,7 +277,8 @@ namespace llec
             using reference = std::conditional_t<IsConst, const value_type&, value_type&>;
 
             small_umap_iterator() = default;
-            constexpr small_umap_iterator(key_iterator kIt, value_iterator vIt) noexcept : m_keyIter(kIt), m_valueIter(vIt)
+            constexpr small_umap_iterator(key_iterator kIt, value_iterator vIt) noexcept
+                : m_keyIter(kIt), m_valueIter(vIt)
             {
             }
 
@@ -374,7 +377,9 @@ namespace llec
                 return {it, false};
             }
             m_keys.push_back(std::forward<T>(value).first);
-            return {iterator{m_keys.cend() - 1, m_values.insert(it.get_value_iterator(), std::forward<T>(value).second)}, true};
+            return {
+                iterator{m_keys.cend() - 1, m_values.insert(it.get_value_iterator(), std::forward<T>(value).second)},
+                true};
         }
 
       private:

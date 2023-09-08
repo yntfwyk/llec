@@ -30,7 +30,7 @@ TEST_CASE("Insert", "[small_unordered_map]")
     {
         llec::small_unordered_map<std::string, int, 10> map;
         map.insert({{"hello", 1}, {"world", 2}, {"!", 3}});
-        std::vector <llec::pair<std::string, int>> v{{"world", 4}, {"inserts", 4}, {"!", 6}};
+        std::vector<llec::pair<std::string, int>> v{{"world", 4}, {"inserts", 4}, {"!", 6}};
         CHECK(map.size() == 3);
         map.insert(v.begin(), v.end());
         CHECK(map.capacity() == 10);

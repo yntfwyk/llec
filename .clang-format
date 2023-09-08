@@ -3,4 +3,10 @@ BasedOnStyle: Microsoft
 AlwaysBreakTemplateDeclarations: Yes
 NamespaceIndentation: All
 PointerAlignment: Left
-ColumnLimit: 256
+RequiresClausePosition: OwnLine
+BreakBeforeConceptDeclarations: Always
+IndentRequiresClause: False
+BreakBeforeBraces: Allman
+AlignAfterOpenBracket: Align
+BinPackParameters: True
+AllowAllArgumentsOnNextLine: False

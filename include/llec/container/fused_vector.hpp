@@ -20,12 +20,13 @@ namespace llec
     /// @brief helper tag to be used to define your own FVContainer type, see fusedvector_tests.cc for examples
     struct fused_vector_container_tag;
 
-    /// @brief A wrapper around collection of vector-like containers. Keeps the addition and deletion of elements in sync.
-    /// @tparam FVContainer User defined FVContainer type, see fusedvector_tests.cc for example. Let users use the own vector-like containers
-    /// as an underlying data structure.
+    /// @brief A wrapper around collection of vector-like containers. Keeps the addition and deletion of elements in
+    /// sync.
+    /// @tparam FVContainer User defined FVContainer type, see fusedvector_tests.cc for example. Let users use the own
+    /// vector-like containers as an underlying data structure.
     /// @tparam ...Types Component types, Note: No duplicate types are supported
     template <typename FVContainer, typename... Types>
-        requires details::has_tag_member<FVContainer>
+    requires details::has_tag_member<FVContainer>
     class fused_vector
     {
         static constexpr std::size_t N = sizeof...(Types);
@@ -33,8 +34,10 @@ namespace llec
         using component_container = typename FVContainer::template container_type<T>;
         using fused_containers_t = std::tuple<component_container<Types>...>;
         static_assert(N > 1, "llec error: template arguments can not be less than two!");
-        static_assert(traits::is_vector_like<std::tuple_element_t<0, fused_containers_t>>, "llec error: template argument FVContainer must be a vector-like type!");
-        static_assert(std::is_same_v<typename FVContainer::container_tag, fused_vector_container_tag>, "llec error: container not compatible see fusedvector_tests.cc for examples!");
+        static_assert(traits::is_vector_like<std::tuple_element_t<0, fused_containers_t>>,
+                      "llec error: template argument FVContainer must be a vector-like type!");
+        static_assert(std::is_same_v<typename FVContainer::container_tag, fused_vector_container_tag>,
+                      "llec error: container not compatible see fusedvector_tests.cc for examples!");
 
       public:
         /// @brief returns the number of components specified in compile-time
@@ -62,10 +65,12 @@ namespace llec
         /// @tparam ...Args
         /// @param ...args values to insert
         template <typename... Args>
-            requires(sizeof...(Args) == N)
+        requires(sizeof...(Args) == N)
         constexpr void push_back(Args&&... args) noexcept
         {
-            (std::get<component_container<std::remove_cv_t<Args>>>(m_fusedContainers).push_back(std::forward<Args>(args)), ...);
+            (std::get<component_container<std::remove_cv_t<Args>>>(m_fusedContainers)
+                 .push_back(std::forward<Args>(args)),
+             ...);
         }
 
         /// @brief removes an element at the specified index
@@ -84,7 +89,8 @@ namespace llec
             LLEC_ASSERT(last < size());
             LLEC_ASSERT(first < last);
 
-            std::apply([first, last](auto&... v) { (v.erase(v.begin() + first, v.begin() + last), ...); }, m_fusedContainers);
+            std::apply([first, last](auto&... v) { (v.erase(v.begin() + first, v.begin() + last), ...); },
+                       m_fusedContainers);
         }
 
         /// @brief removes all the elements
@@ -98,7 +104,7 @@ namespace llec
         /// @tparam Container
         /// @param container container to move from
         template <typename T, typename Container>
-            requires traits::is_vector_like<Container>
+        requires traits::is_vector_like<Container>
         constexpr void move_component_data(Container&& container) noexcept
         {
             static_assert(std::is_rvalue_reference_v<decltype(container)>, "llec error: expecting an rvalue!");
@@ -111,7 +117,7 @@ namespace llec
         /// @tparam Container
         /// @param container container to copy from
         template <typename T, typename Container>
-            requires traits::is_vector_like<Container>
+        requires traits::is_vector_like<Container>
         constexpr void copy_component_data(const Container& container) noexcept
         {
             LLEC_ASSERT(size() == container.size());

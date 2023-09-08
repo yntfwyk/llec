@@ -38,7 +38,8 @@ namespace llec
         template <LogType TLog>
         LLEC_NODISCARD constexpr fixed_string1024 message_builder(const char* func, const char* line) noexcept
         {
-            constexpr auto logCode = []() constexpr -> fixed_string1024 {
+            constexpr auto logCode = []() constexpr -> fixed_string1024
+            {
                 if constexpr (TLog == LogType::LOG_ERR)
                 {
                     return fixed_string1024("[error] ");
@@ -57,12 +58,14 @@ namespace llec
         }
 
         template <LogType TLog, typename... Ts>
-        inline void fancy_print(const char* func, const char* line, const char* message, Ts&&... params) noexcept // basic printing
+        inline void fancy_print(const char* func, const char* line, const char* message,
+                                Ts&&... params) noexcept // basic printing
         {
             LLEC_ASSERT(message);
             LLEC_ASSERT(func);
             LLEC_ASSERT(line);
-            details::print_impl(details::message_builder<TLog>(func, line).append(message).append("\n").data(), std::forward<Ts>(params)...);
+            details::print_impl(details::message_builder<TLog>(func, line).append(message).append("\n").data(),
+                                std::forward<Ts>(params)...);
         }
 
     } // namespace details
@@ -71,11 +74,20 @@ namespace llec
 #define LLEC_STRINGIFY2(x) #x
 #define LLEC_STRINGIFY(x) STRINGIFY2(x)
 #if defined(LLEC_PLATFORM_WINDOWS)
-#define FANCY_ERROR(message, ...) llec::details::fancy_print<llec::LogType::LOG_ERR>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
-#define FANCY_WARN(message, ...) llec::details::fancy_print<llec::LogType::LOG_WARN>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
-#define FANCY_INFO(message, ...) llec::details::fancy_print<llec::LogType::LOG_INFO>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
+#define FANCY_ERROR(message, ...)                                                                                      \
+    llec::details::fancy_print<llec::LogType::LOG_ERR>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
+#define FANCY_WARN(message, ...)                                                                                       \
+    llec::details::fancy_print<llec::LogType::LOG_WARN>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
+#define FANCY_INFO(message, ...)                                                                                       \
+    llec::details::fancy_print<llec::LogType::LOG_INFO>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
 #elif defined(LLEC_PLATFORM_LINUX) || defined(LLEC_PLATFORM_APPLE)
-#define FANCY_ERROR(message, ...) llec::details::fancy_print<llec::LogType::LOG_ERR>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
-#define FANCY_WARN(message, ...) llec::details::fancy_print<llec::LogType::LOG_WARN>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
-#define FANCY_INFO(message, ...) llec::details::fancy_print<llec::LogType::LOG_INFO>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
+#define FANCY_ERROR(message, ...)                                                                                      \
+    llec::details::fancy_print<llec::LogType::LOG_ERR>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message,         \
+                                                       __VA_ARGS__)
+#define FANCY_WARN(message, ...)                                                                                       \
+    llec::details::fancy_print<llec::LogType::LOG_WARN>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message,        \
+                                                        __VA_ARGS__)
+#define FANCY_INFO(message, ...)                                                                                       \
+    llec::details::fancy_print<llec::LogType::LOG_INFO>(__PRETTY_FUNCTION__, LLEC_STRINGIFY(__LINE__), message,        \
+                                                        __VA_ARGS__)
 #endif

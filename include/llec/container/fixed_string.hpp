@@ -25,8 +25,7 @@ namespace llec
         explicit constexpr fixed_string(const char* string) noexcept
         {
             if (!string)
-                LLEC_UNLIKELY
-            return;
+                return;
             const std::size_t len = fixed_string_helper::const_string_length(string);
             if (!len)
                 clear();
@@ -37,14 +36,13 @@ namespace llec
         constexpr fixed_string& operator=(const char* string) noexcept
         {
             if (string)
-                LLEC_LIKELY
-                {
-                    const std::size_t len = fixed_string_helper::const_string_length(string);
-                    if (!len)
-                        clear();
-                    else
-                        fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
-                }
+            {
+                const std::size_t len = fixed_string_helper::const_string_length(string);
+                if (!len)
+                    clear();
+                else
+                    fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+            }
             return *this;
         }
 
@@ -61,8 +59,7 @@ namespace llec
         constexpr fixed_string operator+(const fixed_string& other) const noexcept
         {
             if (other.is_empty())
-                LLEC_UNLIKELY
-            return {};
+                return {};
 
             const std::size_t len = length();
             const std::size_t availability = len < Capacity - 1u ? Capacity - 1u - len : 0u;
@@ -256,6 +253,9 @@ namespace llec
 
     /// @brief fixed_string of capacity 128bytes
     using fixed_string128 = fixed_string<128>;
+
+    /// @brief fixed_string of capacity 256bytes
+    using fixed_string256 = fixed_string<256>;
 
     /// @brief fixed_string of capacity 1024bytes
     using fixed_string1024 = fixed_string<1024>;

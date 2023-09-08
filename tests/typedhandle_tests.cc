@@ -1,7 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <core/typed_handle.hpp>
 
-
 TEST_CASE("TypedHandle", "[typed_handle]")
 {
     struct Vec3
@@ -24,11 +23,11 @@ TEST_CASE("TypedHandle", "[typed_handle]")
 
     auto result1 = typedVec1 + typedVec2;
     auto result2 = typedVec2 - typedVec1;
-    
+
     CHECK(result1.data().x == 5.f);
     CHECK(result1.data().y == 7.f);
     CHECK(result1.data().z == 9.f);
-    
+
     CHECK(result2.data().x == 3.f);
     CHECK(result2.data().y == 3.f);
     CHECK(result2.data().z == 3.f);

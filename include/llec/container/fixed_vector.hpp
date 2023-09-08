@@ -20,7 +20,7 @@ namespace llec
     /// @tparam T Type
     /// @tparam Capacity Maximum number of elements the vector can hold
     template <typename T, std::size_t Capacity>
-        requires std::is_same_v<std::remove_cv_t<T>, T>
+    requires std::is_same_v<std::remove_cv_t<T>, T>
     class fixed_vector
     {
         static_assert(Capacity > 0);
@@ -40,7 +40,7 @@ namespace llec
 
         fixed_vector() noexcept = default;
         ~fixed_vector() noexcept
-            requires(std::is_trivially_destructible_v<T>)
+        requires(std::is_trivially_destructible_v<T>)
         = default;
 
         constexpr ~fixed_vector() noexcept
@@ -54,7 +54,7 @@ namespace llec
         }
 
         fixed_vector(const fixed_vector&) noexcept
-            requires(std::is_trivially_copy_constructible_v<value_type>)
+        requires(std::is_trivially_copy_constructible_v<value_type>)
         = default;
 
         constexpr fixed_vector(const fixed_vector& other) noexcept
@@ -63,7 +63,7 @@ namespace llec
         }
 
         fixed_vector& operator=(const fixed_vector&) noexcept
-            requires(std::is_trivially_copy_assignable_v<value_type>)
+        requires(std::is_trivially_copy_assignable_v<value_type>)
         = default;
 
         constexpr fixed_vector& operator=(const fixed_vector& other) noexcept
@@ -73,31 +73,29 @@ namespace llec
         }
 
         fixed_vector(fixed_vector&&) noexcept
-            requires(std::is_trivially_move_constructible_v<value_type>)
+        requires(std::is_trivially_move_constructible_v<value_type>)
         = default;
 
         constexpr fixed_vector(fixed_vector&& other) noexcept
         {
             if (this != std::addressof(other))
-                LLEC_LIKELY
-                {
-                    relocate_all(std::move(other));
-                }
+            {
+                relocate_all(std::move(other));
+            }
         }
 
         fixed_vector& operator=(fixed_vector&&) noexcept
-            requires(std::is_trivially_move_assignable_v<value_type>)
+        requires(std::is_trivially_move_assignable_v<value_type>)
         = default;
 
         constexpr fixed_vector& operator=(fixed_vector&& other) noexcept
         {
             if (this != std::addressof(other))
-                LLEC_LIKELY
-                {
-                    // once destroyed, the memory is uninitialized that means we can do safe relocations
-                    clear();
-                    relocate_all(std::move(other));
-                }
+            {
+                // once destroyed, the memory is uninitialized that means we can do safe relocations
+                clear();
+                relocate_all(std::move(other));
+            }
             return *this;
         }
 
@@ -138,7 +136,7 @@ namespace llec
         /// @return
         template <typename ConstIt, typename... Args>
         iterator emplace(ConstIt pos, Args&&... args) noexcept
-            requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
         {
             LLEC_ASSERT(m_count < Capacity);
 
@@ -163,7 +161,8 @@ namespace llec
                 {
                     memory::relocate_backward(iterator_adapter(pos), end(), end() + 1);
                 }
-                std::construct_at(std::addressof(*_pos), std::forward<Args>(args)...);
+                std::construct_at(const_cast<typename iterator::pointer>(std::addressof(*_pos)),
+                                  std::forward<Args>(args)...);
             }
 
             m_count++;
@@ -180,7 +179,7 @@ namespace llec
         /// @return
         template <typename ConstIt>
         constexpr iterator insert(ConstIt pos, const value_type& value) noexcept
-            requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
         {
             return emplace(pos, value);
         }
@@ -192,7 +191,7 @@ namespace llec
         /// @return
         template <typename ConstIt>
         constexpr iterator insert(ConstIt pos, value_type&& value) noexcept
-            requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
         {
             return emplace(pos, std::move(value));
         }
@@ -206,7 +205,7 @@ namespace llec
         /// @return
         template <typename ConstIt, typename InputIt>
         constexpr iterator insert(ConstIt pos, InputIt ibegin, InputIt iend) noexcept
-            requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
         {
             LLEC_ASSERT(ibegin < iend);
             LLEC_ASSERT(m_count < Capacity);
@@ -237,7 +236,8 @@ namespace llec
                     memory::relocate_backward(iterator_adapter(pos), end(), end() + count);
                 }
                 for (size_type i = 0; i < count; i++)
-                    std::construct_at(std::addressof(*(_pos + i)), *(ibegin + i));
+                    std::construct_at(const_cast<typename iterator::pointer>(std::addressof(*(_pos + i))),
+                                      *(ibegin + i));
             }
 
             m_count += count;
@@ -260,7 +260,7 @@ namespace llec
         /// @return
         template <typename It>
         constexpr iterator erase(It pos) noexcept
-            requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
+        requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
         {
             LLEC_ASSERT(m_count > 0);
             It itEnd = iterator_selector<It, false>();
@@ -290,13 +290,12 @@ namespace llec
         /// @return
         template <typename It>
         constexpr iterator erase(It ibegin, It iend) noexcept
-            requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
+        requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
         {
             LLEC_ASSERT(ibegin < iend);
 
             if (ibegin == iend || m_count == 0)
-                LLEC_UNLIKELY
-            return iterator_adapter(iend);
+                return iterator_adapter(iend);
 
             const size_type count = std::distance(ibegin, iend);
             LLEC_ASSERT(count <= m_count);
@@ -327,7 +326,7 @@ namespace llec
         {
             return *begin();
         }
-        
+
         /// @brief front
         /// @return first element
         LLEC_NODISCARD constexpr const_reference front() const noexcept
@@ -341,7 +340,7 @@ namespace llec
         {
             return *std::prev(end());
         }
-        
+
         /// @brief back
         /// @return last element
         LLEC_NODISCARD constexpr const_reference back() const noexcept
@@ -372,7 +371,7 @@ namespace llec
         {
             return get_data_address();
         }
-        
+
         /// @brief return the number of elements in the vector
         /// @return
         LLEC_NODISCARD constexpr size_type size() const noexcept
@@ -480,11 +479,10 @@ namespace llec
         constexpr void copy_all(const fixed_vector& other) noexcept
         {
             if (this != std::addressof(other))
-                LLEC_LIKELY
-                {
-                    memory::uninitialized_copy(other.cbegin(), other.cend(), begin());
-                    m_count = other.m_count;
-                }
+            {
+                memory::uninitialized_copy(other.cbegin(), other.cend(), begin());
+                m_count = other.m_count;
+            }
         }
 
         constexpr void relocate_all(fixed_vector&& other) noexcept

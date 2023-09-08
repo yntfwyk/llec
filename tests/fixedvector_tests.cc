@@ -305,7 +305,8 @@ TEST_CASE("Insert range", "[fixed_vector]")
     SECTION("Range insert middle")
     {
         llec::fixed_vector<std::string, 10> vec;
-        std::initializer_list<std::string> il = {s_testString + "1", s_testString + "2", s_testString + "3", s_testString + "4", s_testString + "5"};
+        std::initializer_list<std::string> il = {s_testString + "1", s_testString + "2", s_testString + "3",
+                                                 s_testString + "4", s_testString + "5"};
         vec.insert(vec.begin(), il.begin(), il.end());
         std::initializer_list<std::string> il1 = {"6", "7", "8", "9", "10"};
         vec.insert(vec.begin() + 3, il1.begin(), il1.end());
@@ -432,7 +433,8 @@ TEST_CASE("Move operations", "[fixed_vector]")
 {
     SECTION("Constructor")
     {
-        llec::fixed_vector<std::string, 5> vec = llec::fixed_vector<std::string, 5>{s_testString + "1", s_testString + "2", s_testString + "3", s_testString + "4", s_testString + "5"};
+        llec::fixed_vector<std::string, 5> vec = llec::fixed_vector<std::string, 5>{
+            s_testString + "1", s_testString + "2", s_testString + "3", s_testString + "4", s_testString + "5"};
         llec::s32 i{1};
         for (auto&& elem : vec)
         {

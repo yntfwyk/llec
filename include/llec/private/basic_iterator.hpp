@@ -14,7 +14,7 @@ namespace llec
         class basic_contiguous_iterator
         {
           public:
-            //using iterator_concept = typename std::contiguous_iterator_tag;
+            // using iterator_concept = typename std::contiguous_iterator_tag;
             using iterator_category = typename std::random_access_iterator_tag;
             using difference_type = std::ptrdiff_t;
             using value_type = T;
@@ -130,15 +130,18 @@ namespace llec
 
         template <typename T>
         using basic_contiguous_const_iterator = basic_contiguous_iterator<const T>;
-        
+
         template <typename T>
-        constexpr basic_contiguous_iterator<T> operator+(const std::iter_difference_t<basic_contiguous_iterator<T>> n, const basic_contiguous_iterator<T> it) noexcept
+        constexpr basic_contiguous_iterator<T> operator+(const std::iter_difference_t<basic_contiguous_iterator<T>> n,
+                                                         const basic_contiguous_iterator<T> it) noexcept
         {
             return it + n;
         }
 
         template <typename T>
-        constexpr basic_contiguous_const_iterator<T> operator+(const std::iter_difference_t<basic_contiguous_const_iterator<T>> n, const basic_contiguous_const_iterator<T> it) noexcept
+        constexpr basic_contiguous_const_iterator<T> operator+(
+            const std::iter_difference_t<basic_contiguous_const_iterator<T>> n,
+            const basic_contiguous_const_iterator<T> it) noexcept
         {
             return it + n;
         }

@@ -160,7 +160,7 @@ TEST_CASE("FixedString append", "[fixed_string][append]")
         llec::fixed_string<8> sstr2{" World!"};
         CHECK(sstr.append(sstr2) == llec::fixed_string<8>("Hello Wo"));
     }
-    
+
     {
         llec::fixed_string<8> sstr{"Hello"};
         llec::fixed_string<8> sstr2{};

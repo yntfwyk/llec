@@ -96,7 +96,7 @@ namespace llec
         /// @param last ending position
         /// @return iterator following the last removed element
         template <typename It>
-            requires(std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>)
+        requires(std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>)
         constexpr iterator erase(It first, It last) noexcept
         {
             return m_vector.erase(first, last);

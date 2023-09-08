@@ -176,7 +176,6 @@ TEST_CASE("Move", "[small_unordered_set]")
         CHECK(set1.contains(" !"));
         CHECK(!set1.contains("world"));
     }
-
 }
 
 TEST_CASE("Copy", "[small_unordered_set]")
@@ -226,7 +225,7 @@ TEST_CASE("Copy", "[small_unordered_set]")
         CHECK(set1.contains("hello"));
         CHECK(set1.contains(" !"));
         CHECK(!set1.contains("world"));
-        
+
         CHECK(set.size() == set.capacity());
         CHECK(set.contains(" world"));
         CHECK(set.contains("hello"));

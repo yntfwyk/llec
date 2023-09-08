@@ -18,7 +18,7 @@ namespace llec
     /// @tParam TSize type of index, if dealing smalled quantity of data can use u8, u16 etc.
     /// @tparam Capacity maximum number of elements
     template <typename T, std::size_t Capacity, typename TSize = std::size_t>
-        requires std::is_same_v<std::remove_cv_t<T>, T>
+    requires std::is_same_v<std::remove_cv_t<T>, T>
     class fixed_object_pool
     {
       public:
@@ -44,7 +44,7 @@ namespace llec
         }
 
         ~fixed_object_pool() noexcept
-            requires(std::is_trivially_destructible_v<value_type>)
+        requires(std::is_trivially_destructible_v<value_type>)
         = default;
 
         constexpr ~fixed_object_pool() noexcept
@@ -61,7 +61,7 @@ namespace llec
         }
 
         fixed_object_pool(const fixed_object_pool&) noexcept
-            requires(std::is_trivially_copy_constructible_v<value_type>)
+        requires(std::is_trivially_copy_constructible_v<value_type>)
         = default;
 
         constexpr fixed_object_pool(const fixed_object_pool& other) noexcept
@@ -70,7 +70,7 @@ namespace llec
         }
 
         fixed_object_pool& operator=(const fixed_object_pool&) noexcept
-            requires(std::is_trivially_copy_assignable_v<value_type>)
+        requires(std::is_trivially_copy_assignable_v<value_type>)
         = default;
 
         constexpr fixed_object_pool& operator=(const fixed_object_pool& other) noexcept
@@ -80,7 +80,7 @@ namespace llec
         }
 
         fixed_object_pool(fixed_object_pool&&) noexcept
-            requires(std::is_trivially_move_constructible_v<value_type>)
+        requires(std::is_trivially_move_constructible_v<value_type>)
         = default;
 
         constexpr fixed_object_pool(fixed_object_pool&& other) noexcept
@@ -89,7 +89,7 @@ namespace llec
         }
 
         fixed_object_pool& operator=(fixed_object_pool&&) noexcept
-            requires(std::is_trivially_move_assignable_v<value_type>)
+        requires(std::is_trivially_move_assignable_v<value_type>)
         = default;
 
         constexpr fixed_object_pool& operator=(fixed_object_pool&& other) noexcept
@@ -136,8 +136,7 @@ namespace llec
         constexpr bool erase(handle_type hndl) noexcept
         {
             if (!is_handle_valid(hndl))
-                LLEC_UNLIKELY
-            return false;
+                return false;
 
             handle_type& slot = m_indices[hndl.id];
             const size_type dataIndex = slot.id;
@@ -296,41 +295,39 @@ namespace llec
         constexpr void copy_all(const fixed_object_pool& other) noexcept
         {
             if (this != std::addressof(other))
-                LLEC_LIKELY
+            {
+                memory::uninitialized_copy(other.begin(), other.end(), begin());
+                memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
+                m_count = other.m_count;
+                m_generation = other.m_generation;
+                m_freeList = other.m_freeList;
+            }
+        }
+
+        constexpr void relocate_all(fixed_object_pool&& other) noexcept
+        {
+            if (this != std::addressof(other))
+            {
+                if constexpr (traits::relocatable<value_type>)
                 {
-                    memory::uninitialized_copy(other.begin(), other.end(), begin());
+                    memory::relocate(other.begin(), other.end(), begin());
+                    memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
+                    m_count = std::exchange(other.m_count, 0);
+                    m_generation = std::exchange(other.m_generation, 0);
+                    m_freeList = std::exchange(other.m_freeList, 0);
+                }
+                else if constexpr (traits::trivially_relocatable<value_type>)
+                {
+                    memory::uninitialized_move(other.begin(), other.end(), begin());
                     memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
                     memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
                     m_count = other.m_count;
                     m_generation = other.m_generation;
                     m_freeList = other.m_freeList;
                 }
-        }
-
-        constexpr void relocate_all(fixed_object_pool&& other) noexcept
-        {
-            if (this != std::addressof(other))
-                LLEC_LIKELY
-                {
-                    if constexpr (traits::relocatable<value_type>)
-                    {
-                        memory::relocate(other.begin(), other.end(), begin());
-                        memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
-                        m_count = std::exchange(other.m_count, 0);
-                        m_generation = std::exchange(other.m_generation, 0);
-                        m_freeList = std::exchange(other.m_freeList, 0);
-                    }
-                    else if constexpr (traits::trivially_relocatable<value_type>)
-                    {
-                        memory::uninitialized_move(other.begin(), other.end(), begin());
-                        memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                        memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
-                        m_count = other.m_count;
-                        m_generation = other.m_generation;
-                        m_freeList = other.m_freeList;
-                    }
-                }
+            }
         }
 
       private:

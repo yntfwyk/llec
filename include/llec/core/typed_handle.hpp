@@ -13,7 +13,7 @@ namespace llec
     /// @tparam Tag unique tag to distinguish between types
     /// @tparam RawType underlying type, must be a Plain Old Data type
     template <typename RawType, typename Tag>
-        requires(std::is_trivial_v<RawType> && std::is_standard_layout_v<RawType>)
+    requires(std::is_trivial_v<RawType> && std::is_standard_layout_v<RawType>)
     class typed_handle
     {
       public:
@@ -51,141 +51,141 @@ namespace llec
         }
 
         LLEC_NODISCARD constexpr typed_handle operator+(const typed_handle& other) const
-            requires traits::is_addable<raw_type>
+        requires traits::is_addable<raw_type>
         {
             return {m_typedData + other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator-(const typed_handle& other) const
-            requires traits::is_subtractable<raw_type>
+        requires traits::is_subtractable<raw_type>
         {
             return {m_typedData - other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator*(const typed_handle& other) const
-            requires traits::is_multiplyable<raw_type>
+        requires traits::is_multiplyable<raw_type>
         {
             return {m_typedData * other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator/(const typed_handle& other) const
-            requires traits::is_divideable<raw_type>
+        requires traits::is_divideable<raw_type>
         {
             return {m_typedData / other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator<<(const typed_handle& other) const
-            requires traits::is_left_shiftable<raw_type>
+        requires traits::is_left_shiftable<raw_type>
         {
             return {m_typedData << other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator>>(const typed_handle& other) const
-            requires traits::is_right_shiftable<raw_type>
+        requires traits::is_right_shiftable<raw_type>
         {
             return {m_typedData >> other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator|(const typed_handle& other) const
-            requires traits::is_orable<raw_type>
+        requires traits::is_orable<raw_type>
         {
             return {m_typedData | other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle operator^(const typed_handle& other) const
-            requires traits::is_xorable<raw_type>
+        requires traits::is_xorable<raw_type>
         {
             return {m_typedData ^ other.m_typedData};
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator+=(const typed_handle& other)
-            requires traits::is_add_assignable<raw_type>
+        requires traits::is_add_assignable<raw_type>
         {
             m_typedData += other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator-=(const typed_handle& other)
-            requires traits::is_subtract_assignable<raw_type>
+        requires traits::is_subtract_assignable<raw_type>
         {
             m_typedData -= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator*=(const typed_handle& other)
-            requires traits::is_multiply_assignable<raw_type>
+        requires traits::is_multiply_assignable<raw_type>
         {
             m_typedData *= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator/=(const typed_handle& other)
-            requires traits::is_divide_assignable<raw_type>
+        requires traits::is_divide_assignable<raw_type>
         {
             m_typedData /= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator<<=(const typed_handle& other)
-            requires traits::is_left_shift_assignable<raw_type>
+        requires traits::is_left_shift_assignable<raw_type>
         {
             m_typedData <<= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator>>=(const typed_handle& other)
-            requires traits::is_right_shift_assignable<raw_type>
+        requires traits::is_right_shift_assignable<raw_type>
         {
             m_typedData >>= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator|=(const typed_handle& other)
-            requires traits::is_or_assignable<raw_type>
+        requires traits::is_or_assignable<raw_type>
         {
             m_typedData |= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr typed_handle& operator^=(const typed_handle& other)
-            requires traits::is_xor_assignable<raw_type>
+        requires traits::is_xor_assignable<raw_type>
         {
             m_typedData ^= other.m_typedData;
             return *this;
         }
 
         LLEC_NODISCARD constexpr bool operator==(const typed_handle& other) const
-            requires traits::is_equal_comparable<raw_type>
+        requires traits::is_equal_comparable<raw_type>
         {
             return m_typedData == other.m_typedData;
         }
 
         LLEC_NODISCARD constexpr bool operator!=(const typed_handle& other) const
-            requires traits::is_notequal_comparable<raw_type>
+        requires traits::is_notequal_comparable<raw_type>
         {
             return m_typedData != other.m_typedData;
         }
 
         LLEC_NODISCARD constexpr bool operator<(const typed_handle& other) const
-            requires traits::is_lessthan_comparable<raw_type>
+        requires traits::is_lessthan_comparable<raw_type>
         {
             return m_typedData < other.m_typedData;
         }
 
         LLEC_NODISCARD constexpr bool operator<=(const typed_handle& other) const
-            requires traits::is_lessthan_equal_comparable<raw_type>
+        requires traits::is_lessthan_equal_comparable<raw_type>
         {
             return m_typedData <= other.m_typedData;
         }
 
         LLEC_NODISCARD constexpr bool operator>(const typed_handle& other) const
-            requires traits::is_greaterthan_comparable<raw_type>
+        requires traits::is_greaterthan_comparable<raw_type>
         {
             return m_typedData > other.m_typedData;
         }
 
         LLEC_NODISCARD constexpr bool operator>=(const typed_handle& other) const
-            requires traits::is_greaterthan_equal_comparable<raw_type>
+        requires traits::is_greaterthan_equal_comparable<raw_type>
         {
             return m_typedData >= other.m_typedData;
         }

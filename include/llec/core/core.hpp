@@ -5,8 +5,8 @@
 
 #pragma once
 
-#define LLEC_VERSION_MAJOR  1
-#define LLEC_VERSION_MINOR  0
+#define LLEC_VERSION_MAJOR 1
+#define LLEC_VERSION_MINOR 0
 #define LLEC_VEERSION_PATCH 0
 
 #if defined(__clang__)
@@ -16,6 +16,7 @@
 #define LLEC_COMPILER_GCC
 #define LLEC_CPP_VER __cplusplus
 #elif defined(_MSC_VER)
+#define LLEC_COMPILER_MSVC
 #define LLEC_CPP_VER _MSVC_LANG
 #else
 #error llec error: compiler not supported!
@@ -43,11 +44,11 @@
 #include <bit>
 #include <cstddef>
 #include <cstring>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <type_traits>
 #include <utility>
-#include <functional>
 
 #include <concepts>
 
@@ -63,8 +64,6 @@
 #endif // LLEC_DEBUG_BUILD
 
 #define LLEC_NODISCARD [[nodiscard]]
-#define LLEC_LIKELY [[likely]]
-#define LLEC_UNLIKELY [[unlikely]]
 
 namespace llec
 {
@@ -114,7 +113,8 @@ namespace llec
         inline constexpr bool is_f64_v = std::is_same_v<T, f64>;
 
         template <typename T>
-        inline constexpr bool is_trivially_xstructible_v = std::is_trivially_constructible_v<T> && std::is_trivially_destructible_v<T>;
+        inline constexpr bool is_trivially_xstructible_v =
+            std::is_trivially_constructible_v<T> && std::is_trivially_destructible_v<T>;
 
         template <typename T>
         concept single_precision = is_f32_v<T>;
@@ -123,7 +123,9 @@ namespace llec
         template <typename T>
         concept u32_64_integral = is_u32_v<T> || is_u64_v<T>;
         template <typename T>
-        concept trivially_relocatable = (std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>) || std::is_trivially_copyable_v<T>;
+        concept trivially_relocatable =
+            (std::is_trivially_move_constructible_v<T> && std::is_trivially_destructible_v<T>) ||
+            std::is_trivially_copyable_v<T>;
         template <typename T>
         concept relocatable = std::is_move_constructible_v<T> && std::is_destructible_v<T>;
 

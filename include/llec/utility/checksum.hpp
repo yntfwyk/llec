@@ -42,14 +42,13 @@ namespace llec::checksum
         return (b << 16u) | a;
     }
 
-
     /// @brief fnv1a (32 or 64)
     /// @tparam T u32 or u64
     /// @param data to get a hash of
     /// @param length in bytes
     /// @return hash
     template <typename T = u32>
-        requires traits::u32_64_integral<T>
+    requires traits::u32_64_integral<T>
     constexpr T fnv1a(const void* data, std::size_t length) noexcept
     {
         T hash = traits::is_u64_v<T> ? 0xCBF29CE484222325u : 0x811C9DC5u;
@@ -69,7 +68,7 @@ namespace llec::checksum
     /// @param compile-time string to get a hash of
     /// @return hash
     template <typename T = u32>
-        requires traits::u32_64_integral<T>
+    requires traits::u32_64_integral<T>
     constexpr T fnv1a(std::string_view str) noexcept
     {
         T hash = traits::is_u64_v<T> ? 0xCBF29CE484222325u : 0x811C9DC5u;
@@ -82,7 +81,6 @@ namespace llec::checksum
         }
         return hash;
     }
-
 
 } // namespace llec::checksum
 
@@ -100,4 +98,3 @@ constexpr llec::u64 operator""_fnv64(const char* str, [[maybe_unused]] std::size
 {
     return llec::checksum::fnv1a<llec::u64>(str);
 }
-
