@@ -487,13 +487,7 @@ namespace llec
 
         constexpr void relocate_all(fixed_vector&& other) noexcept
         {
-            if constexpr (traits::relocatable<value_type>)
-            {
-                memory::relocate(other.begin(), other.end(), begin());
-                // relocation already moves and destroys so we can set other's count to zero
-                m_count = std::exchange(other.m_count, 0);
-            }
-            else if constexpr (traits::trivially_relocatable<value_type>)
+            if constexpr (traits::trivially_relocatable<value_type>)
             {
                 memory::uninitialized_move(other.begin(), other.end(), begin());
 
@@ -507,6 +501,12 @@ namespace llec
                     // can destroy all the elements
                     m_count = other.m_count;
                 }
+            }
+            else if constexpr (traits::relocatable<value_type>)
+            {
+                memory::relocate(other.begin(), other.end(), begin());
+                // relocation already moves and destroys so we can set other's count to zero
+                m_count = std::exchange(other.m_count, 0);
             }
         }
 

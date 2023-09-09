@@ -309,16 +309,7 @@ namespace llec
         {
             if (this != std::addressof(other))
             {
-                if constexpr (traits::relocatable<value_type>)
-                {
-                    memory::relocate(other.begin(), other.end(), begin());
-                    memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
-                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
-                    m_count = std::exchange(other.m_count, 0);
-                    m_generation = std::exchange(other.m_generation, 0);
-                    m_freeList = std::exchange(other.m_freeList, 0);
-                }
-                else if constexpr (traits::trivially_relocatable<value_type>)
+                if constexpr (traits::trivially_relocatable<value_type>)
                 {
                     memory::uninitialized_move(other.begin(), other.end(), begin());
                     memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
@@ -326,6 +317,15 @@ namespace llec
                     m_count = other.m_count;
                     m_generation = other.m_generation;
                     m_freeList = other.m_freeList;
+                }
+                else if constexpr (traits::relocatable<value_type>)
+                {
+                    memory::relocate(other.begin(), other.end(), begin());
+                    memory::memcpy(m_erase.data(), other.m_erase.data(), other.m_count * sizeof(size_type));
+                    memory::memcpy(m_indices.data(), other.m_indices.data(), capacity() * sizeof(handle_type));
+                    m_count = std::exchange(other.m_count, 0);
+                    m_generation = std::exchange(other.m_generation, 0);
+                    m_freeList = std::exchange(other.m_freeList, 0);
                 }
             }
         }
