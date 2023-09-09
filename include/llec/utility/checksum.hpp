@@ -83,18 +83,20 @@ namespace llec::checksum
     }
 
 } // namespace llec::checksum
-
-constexpr llec::u32 operator""_adler(const char* str, [[maybe_unused]] std::size_t len) noexcept
+namespace llec::literals
 {
-    return llec::checksum::adler32(str);
-}
+    constexpr u32 operator""_adler(const char* str, [[maybe_unused]] std::size_t len) noexcept
+    {
+        return checksum::adler32(str);
+    }
 
-constexpr llec::u32 operator""_fnv32(const char* str, [[maybe_unused]] std::size_t len) noexcept
-{
-    return llec::checksum::fnv1a(str);
-}
+    constexpr u32 operator""_fnv32(const char* str, [[maybe_unused]] std::size_t len) noexcept
+    {
+        return checksum::fnv1a(str);
+    }
 
-constexpr llec::u64 operator""_fnv64(const char* str, [[maybe_unused]] std::size_t len) noexcept
-{
-    return llec::checksum::fnv1a<llec::u64>(str);
-}
+    constexpr u64 operator""_fnv64(const char* str, [[maybe_unused]] std::size_t len) noexcept
+    {
+        return llec::checksum::fnv1a<llec::u64>(str);
+    }
+} // namespace llec::literals

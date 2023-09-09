@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
-
 #include <utility/checksum.hpp>
+
+using namespace llec::literals;
 
 TEST_CASE("Adler32", "[checksum][adler32]")
 {
