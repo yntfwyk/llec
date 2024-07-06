@@ -15,5 +15,9 @@ TEST_CASE("Type Hash", "[typeinfo]")
     STATIC_CHECK(llec::typeinfo::type_hash32<ChildClass>() == "struct ChildClass"_fnv32);
     STATIC_CHECK(llec::typeinfo::type_hash64<TestClass>() == "class TestClass"_fnv64);
     STATIC_CHECK(llec::typeinfo::type_hash64<int>() == "int"_fnv64);
+#else
+    STATIC_CHECK(llec::typeinfo::type_hash32<ChildClass>() == "ChildClass"_fnv32);
+    STATIC_CHECK(llec::typeinfo::type_hash64<TestClass>() == "TestClass"_fnv64);
+    STATIC_CHECK(llec::typeinfo::type_hash64<int>() == "int"_fnv64);
 #endif
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "container/fixed_string.hpp"
 #include "core/core.hpp"
 #include "utility/checksum.hpp"
 
@@ -8,6 +7,9 @@ namespace llec
     class typeinfo
     {
       public:
+        /// @brief Evaluates name of specified type in compile time
+        /// @tparam T Type to get the name of
+        /// @return std::string_view
         template <typename T>
         static consteval auto type_name() noexcept
         {
@@ -36,12 +38,16 @@ namespace llec
 #endif
         }
 
+        /// @brief Returns a u32 fnv1a hash of a type in compile time
+        /// @tparam T Type to get the hash of
         template <typename T>
         LLEC_NODISCARD static consteval u32 type_hash32() noexcept
         {
             return checksum::fnv1a(type_name<T>());
         }
 
+        /// @brief Returns a u64 fnv1a hash of a type in compile time
+        /// @tparam T Type to get the hash of
         template <typename T>
         LLEC_NODISCARD static consteval u64 type_hash64() noexcept
         {
