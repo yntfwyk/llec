@@ -72,7 +72,7 @@ namespace llec
 } // namespace llec
 
 #define LLEC_STRINGIFY2(x) #x
-#define LLEC_STRINGIFY(x) STRINGIFY2(x)
+#define LLEC_STRINGIFY(x) LLEC_STRINGIFY2(x)
 #if defined(LLEC_PLATFORM_WINDOWS)
 #define FANCY_ERROR(message, ...)                                                                                      \
     llec::details::fancy_print<llec::LogType::LOG_ERR>(__FUNCSIG__, LLEC_STRINGIFY(__LINE__), message, __VA_ARGS__)
