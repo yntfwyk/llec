@@ -21,16 +21,22 @@ set(LLEC_HEADERS ${LLEC_INC_DIR}/llec.hpp
     ${LLEC_INC_DIR}/container/small_unordered_set.hpp
     ${LLEC_INC_DIR}/math/fast_math.hpp
     ${LLEC_INC_DIR}/utility/checksum.hpp
+    ${LLEC_INC_DIR}/utility/typeinfo.hpp
     ${LLEC_INC_DIR}/utility/pair.hpp
+    ${LLEC_INC_DIR}/utility/function_traits.hpp
+    ${LLEC_INC_DIR}/utility/stack_function.hpp
+    ${LLEC_INC_DIR}/utility/overload_pattern.hpp
     ${LLEC_INC_DIR}/private/aligned_storage.hpp
     ${LLEC_INC_DIR}/private/basic_iterator.hpp)
 
 set(LLEC_SRC_TESTS ${LLEC_SRC_TESTS_DIR}/checksum_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/typeinfo_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedvector_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fusedvector_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedstring_tests.cc
     ${LLEC_SRC_TESTS_DIR}/fixedobjectpool_tests.cc
     ${LLEC_SRC_TESTS_DIR}/typedhandle_tests.cc
+    ${LLEC_SRC_TESTS_DIR}/stackfunction_tests.cc
     ${LLEC_SRC_TESTS_DIR}/smallunorderedmap_tests.cc
     ${LLEC_SRC_TESTS_DIR}/smallunorderedset_tests.cc)
 
