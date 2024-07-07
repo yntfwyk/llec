@@ -74,7 +74,7 @@ TEST_CASE("Recursion", "[stack_function]")
         }
     };
     Check c;
-    llec::stack_function<8, int(Check&, int, int)> mf = &Check::f;
+    llec::stack_function<32, int(Check&, int, int)> mf = &Check::f;
     CHECK(mf(c, 1, 2) == 3);
 }
 
