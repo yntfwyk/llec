@@ -25,7 +25,6 @@ namespace llec
             constexpr auto start = signature.find(exclude);
             constexpr auto offset = start + exclude.length() + 1;
             constexpr auto end = signature.find(">(void) noexcept");
-
             return signature.substr(offset, end - offset);
 #else
 #error compiler not supported

@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "../core/core.hpp"
+#include "core/core.hpp"
 #include <string_view>
 
 namespace llec::checksum
@@ -13,7 +13,7 @@ namespace llec::checksum
     /// @param data to get a checksum of
     /// @param length in bytes
     /// @return checksum of type u32
-    constexpr u32 adler32(const void* data, std::size_t length) noexcept
+    LLEC_NODISCARD constexpr u32 adler32(const void* data, std::size_t length) noexcept
     {
         constexpr u32 ADLER_MAGIC = 65521u;
         const u8* bytes = static_cast<const u8*>(data);
@@ -29,7 +29,7 @@ namespace llec::checksum
     /// @brief adler32
     /// @param compile-time string to get a checksum of
     /// @return checksum of type u32
-    constexpr u32 adler32(std::string_view str) noexcept
+    LLEC_NODISCARD constexpr u32 adler32(std::string_view str) noexcept
     {
         constexpr u32 ADLER_MAGIC = 65521u;
         const std::size_t length = str.length();
@@ -49,7 +49,7 @@ namespace llec::checksum
     /// @return hash
     template <typename T = u32>
     requires traits::u32_64_integral<T>
-    constexpr T fnv1a(const void* data, std::size_t length) noexcept
+    LLEC_NODISCARD constexpr T fnv1a(const void* data, std::size_t length) noexcept
     {
         T hash = traits::is_u64_v<T> ? 0xCBF29CE484222325u : 0x811C9DC5u;
         constexpr T fnv_prime = traits::is_u64_v<T> ? 0x100000001B3u : 0x01000193u;
@@ -69,7 +69,7 @@ namespace llec::checksum
     /// @return hash
     template <typename T = u32>
     requires traits::u32_64_integral<T>
-    constexpr T fnv1a(std::string_view str) noexcept
+    LLEC_NODISCARD constexpr T fnv1a(std::string_view str) noexcept
     {
         T hash = traits::is_u64_v<T> ? 0xCBF29CE484222325u : 0x811C9DC5u;
         constexpr T fnv_prime = traits::is_u64_v<T> ? 0x100000001B3u : 0x01000193u;
@@ -97,6 +97,6 @@ namespace llec::literals
 
     constexpr u64 operator""_fnv64(const char* str, [[maybe_unused]] std::size_t len) noexcept
     {
-        return llec::checksum::fnv1a<llec::u64>(str);
+        return checksum::fnv1a<u64>(str);
     }
 } // namespace llec::literals

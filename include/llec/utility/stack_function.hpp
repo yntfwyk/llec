@@ -81,6 +81,7 @@ namespace llec
         stack_function& operator=(std::nullptr_t)
         {
             reset();
+            return *this;
         }
 
         R operator()(Args... args) const noexcept

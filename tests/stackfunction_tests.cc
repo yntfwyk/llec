@@ -110,10 +110,10 @@ TEST_CASE("reset", "[stack_function]")
 TEST_CASE("operator bool()", "[stack_function]")
 {
     std::string test = "HelloWorld!";
-    llec::stack_function<128, int(float, std::string)> func{[&test](float f, std::string s) { return 0; }};
+    llec::stack_function<128, int(float, std::string)> func{[&test](float f, std::string s) { return test.length(); }};
     CHECK(static_cast<bool>(func));
 
-    func.reset();
+    func = nullptr;
 
     CHECK(!static_cast<bool>(func));
     
