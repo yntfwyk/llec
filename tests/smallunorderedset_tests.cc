@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/small_unordered_set.hpp>
 #include <string.h>
+#include "container/small_unordered_set.hpp"
 
 TEST_CASE("Insert", "[small_unordered_set]")
 {

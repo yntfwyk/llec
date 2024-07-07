@@ -1,9 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
-#include <utility/stack_function.hpp>
-#include <utility/typeinfo.hpp>
-#include <core/fancy_print.hpp>
 #include <array>
 #include <string>
+
+#include "core/fancy_print.hpp"
+#include "utility/stack_function.hpp"
+#include "utility/typeinfo.hpp"
 
 int multiply(int x, int y)
 {

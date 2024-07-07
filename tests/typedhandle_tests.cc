@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <core/typed_handle.hpp>
+#include "core/typed_handle.hpp"
 
 TEST_CASE("TypedHandle", "[typed_handle]")
 {

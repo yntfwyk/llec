@@ -54,7 +54,7 @@ namespace llec
                 }
             };
             auto test = logCode();
-            return test.append(func).append("(").append(line).append("): ");
+            return test.append(func).append("[").append(line).append("]: ");
         }
 
         template <LogType TLog, typename... Ts>

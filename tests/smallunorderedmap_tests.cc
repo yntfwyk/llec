@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/small_unordered_map.hpp>
 #include <vector>
+#include "container/small_unordered_map.hpp"
 
 TEST_CASE("Insert", "[small_unordered_map]")
 {

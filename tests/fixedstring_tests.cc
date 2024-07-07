@@ -1,10 +1,10 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/fixed_string.hpp>
+#include "container/fixed_string.hpp"
 
 TEST_CASE("FixedString length", "[fixed_string][length]")
 {
-    llec::fixed_string sstr{"Hello World!"};
-    CHECK(sstr.length() == 12);
+    constexpr llec::fixed_string sstr{"Hello World!"};
+    STATIC_CHECK(sstr.length() == 12);
 }
 
 TEST_CASE("FixedString iteration", "[fixed_string][iteration]")
@@ -23,7 +23,7 @@ TEST_CASE("FixedString iteration", "[fixed_string][iteration]")
 
     SECTION("Const iteration")
     {
-        const llec::fixed_string sstr{"Hello World!"};
+        constexpr llec::fixed_string sstr{"Hello World!"};
         llec::s32 i{};
         for (auto&& c : sstr)
         {
@@ -36,18 +36,18 @@ TEST_CASE("FixedString comparison", "[fixed_string][comparison]")
 {
     SECTION("Not equal!")
     {
-        llec::fixed_string sstr1{"Hello World!"};
-        llec::fixed_string sstr2{"HelloWorld!"};
+        constexpr llec::fixed_string sstr1{"Hello World!"};
+        constexpr llec::fixed_string sstr2{"HelloWorld!"};
 
-        CHECK(sstr1 != sstr2);
+        STATIC_CHECK(sstr1 != sstr2);
     }
 
     SECTION("Equal!")
     {
-        llec::fixed_string sstr1{"Hello World!"};
-        llec::fixed_string sstr2{"Hello World!"};
+        constexpr llec::fixed_string sstr1{"Hello World!"};
+        constexpr llec::fixed_string sstr2{"Hello World!"};
 
-        CHECK(sstr1 == sstr2);
+        STATIC_CHECK(sstr1 == sstr2);
     }
 }
 
@@ -87,38 +87,38 @@ TEST_CASE("FixedString subscript", "[fixed_string][subscript]")
 
     SECTION("Const")
     {
-        const llec::fixed_string sstr{"Hello"};
+        constexpr llec::fixed_string sstr{"Hello"};
 
-        CHECK(sstr[4] == 'o');
+        STATIC_CHECK(sstr[4] == 'o');
     }
 }
 
 TEST_CASE("FixedString find", "[fixed_string][find]")
 {
-    llec::fixed_string sstr{"The quick brown fox jumps over the lazy dog"};
+    constexpr llec::fixed_string sstr{"The quick brown fox jumps over the lazy dog"};
 
-    CHECK(sstr.find(llec::fixed_string{"fox"}) == 16);
-    CHECK(sstr.find(llec::fixed_string{"The"}) == 0);
-    CHECK(sstr.find(llec::fixed_string{" quick"}) == 3);
-    CHECK(sstr.find(llec::fixed_string{"dog"}) == 40);
-    CHECK(sstr.find(llec::fixed_string{"dog "}) == -1);
+    STATIC_CHECK(sstr.find(llec::fixed_string{"fox"}) == 16);
+    STATIC_CHECK(sstr.find(llec::fixed_string{"The"}) == 0);
+    STATIC_CHECK(sstr.find(llec::fixed_string{" quick"}) == 3);
+    STATIC_CHECK(sstr.find(llec::fixed_string{"dog"}) == 40);
+    STATIC_CHECK(sstr.find(llec::fixed_string{"dog "}) == -1);
 }
 
 TEST_CASE("FixedString substr", "[fixed_string][substr]")
 {
     {
-        llec::fixed_string sstr{"Hello World!"};
-        const llec::fixed_string hello = sstr.substr(0, 6);
-        const llec::fixed_string world = sstr.substr(6, 6);
+        constexpr llec::fixed_string sstr{"Hello World!"};
+        constexpr llec::fixed_string hello = sstr.substr(0, 6);
+        constexpr llec::fixed_string world = sstr.substr(6, 6);
 
-        CHECK(hello == llec::fixed_string{"Hello "});
-        CHECK(world == llec::fixed_string{"World!"});
+        STATIC_CHECK(hello == llec::fixed_string{"Hello "});
+        STATIC_CHECK(world == llec::fixed_string{"World!"});
     }
     {
-        llec::fixed_string sstr{"Hello"};
+        constexpr llec::fixed_string sstr{"Hello"};
 
-        CHECK(sstr.substr(0, 6) == llec::fixed_string{"Hello"});
-        CHECK(sstr.substr(0, 5) == llec::fixed_string{"Hello"});
+        STATIC_CHECK(sstr.substr(0, 6) == llec::fixed_string{"Hello"});
+        STATIC_CHECK(sstr.substr(0, 5) == llec::fixed_string{"Hello"});
     }
 }
 
@@ -132,18 +132,18 @@ TEST_CASE("FixedString clear", "[fixed_string][clear]")
 TEST_CASE("FixedString capacity", "[fixed_string][capacity]")
 {
     {
-        llec::fixed_string sstr{};
-        CHECK(sstr.capacity() == 512ull);
+        constexpr llec::fixed_string sstr{};
+        STATIC_CHECK(sstr.capacity() == 512ull);
     }
 
     {
-        llec::fixed_string<256> sstr{};
-        CHECK(sstr.capacity() == 256ull);
+        constexpr llec::fixed_string<256> sstr{};
+        STATIC_CHECK(sstr.capacity() == 256ull);
     }
 
     {
         llec::fixed_string<128> sstr{};
-        CHECK(sstr.capacity() == 128ull);
+        STATIC_CHECK(sstr.capacity() == 128ull);
     }
 }
 

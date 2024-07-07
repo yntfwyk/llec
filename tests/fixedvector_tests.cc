@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/fixed_vector.hpp>
 #include <iostream>
 #include <string.h>
+#include "container/fixed_vector.hpp"
 
 static const std::string s_testString = "The quick brown fox jumps over the lazy dog";
 

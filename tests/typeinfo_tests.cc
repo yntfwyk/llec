@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <utility/typeinfo.hpp>
+#include "utility/typeinfo.hpp"
 
 class TestClass
 {

@@ -24,24 +24,29 @@ namespace llec
         /// @param string takes a const char* string
         explicit constexpr fixed_string(const char* string) noexcept
         {
-            if (!string)
-                return;
+            LLEC_ASSERT(string);
             const std::size_t len = fixed_string_helper::const_string_length(string);
             if (!len)
                 clear();
             else
-                fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+            {
+                const std::size_t charsToCopy = len > Capacity - 1 ? Capacity - 1 : len;
+                fixed_string_helper::copy_n(m_string, charsToCopy, string);
+                m_string[charsToCopy] = 0;
+            }
         }
 
         constexpr fixed_string& operator=(const char* string) noexcept
         {
-            if (string)
+            LLEC_ASSERT(string);
+            const std::size_t len = fixed_string_helper::const_string_length(string);
+            if (!len)
+                clear();
+            else
             {
-                const std::size_t len = fixed_string_helper::const_string_length(string);
-                if (!len)
-                    clear();
-                else
-                    fixed_string_helper::copy_n(m_string, len > Capacity - 1 ? Capacity - 1 : len, string);
+                const std::size_t charsToCopy = len > Capacity - 1 ? Capacity - 1 : len;
+                fixed_string_helper::copy_n(m_string, charsToCopy, string);
+                m_string[charsToCopy] = 0;
             }
             return *this;
         }
@@ -76,10 +81,17 @@ namespace llec
             const std::size_t len = length();
             if (len != other.length())
                 return false;
-            for (std::size_t i = 0; i < len; i++)
-                if (m_string[i] != other.m_string[i])
-                    return false;
-            return true;
+            if (std::is_constant_evaluated())
+            {
+                for (std::size_t i = 0; i < len; i++)
+                    if (m_string[i] != other.m_string[i])
+                        return false;
+                return true;
+            }
+            else
+            {
+                return !std::memcmp(m_string, other.m_string, len);
+            }
         }
 
         constexpr bool operator!=(const fixed_string& other) const noexcept
@@ -109,7 +121,7 @@ namespace llec
         /// @brief clears the fixed_string
         constexpr void clear() noexcept
         {
-            fixed_string_helper::fill_n(m_string, Capacity, 0);
+            m_string[0] = 0;
         }
 
         /// @brief checks if fixed_string is empty
@@ -125,15 +137,15 @@ namespace llec
         /// @return substring of type fixed_string
         LLEC_NODISCARD constexpr fixed_string substr(std::size_t pos, std::size_t n) const noexcept
         {
-            if (is_empty())
-                return *this;
-            fixed_string result;
+            LLEC_ASSERT(!is_empty());
             const std::size_t srcLen = length();
-            if (pos >= srcLen || !n)
-                return result;
+            LLEC_ASSERT(!(pos >= srcLen || !n));
+
+            fixed_string result;
             const std::size_t availability = srcLen - pos;
             n = n > availability ? availability : n;
             fixed_string_helper::copy_n(result.m_string, n, m_string + pos);
+            result[n] = 0;
             return result;
         }
 
@@ -171,6 +183,7 @@ namespace llec
             const auto sizeStr = n;
             const auto copySize = availability >= sizeStr ? sizeStr : availability;
             fixed_string_helper::copy_n(std::addressof(m_string[size]), copySize, str);
+            m_string[size + copySize] = 0;
             return *this;
         }
 

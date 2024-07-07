@@ -1,7 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
-#include <container/fixed_object_pool.hpp>
-#include <iostream>
 #include <string.h>
+#include "container/fixed_object_pool.hpp"
 
 TEST_CASE("Insert", "[fixed_object_pool]")
 {
