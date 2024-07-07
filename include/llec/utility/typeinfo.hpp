@@ -13,13 +13,7 @@ namespace llec
         template <typename T>
         static consteval auto type_name() noexcept
         {
-#if defined(LLEC_COMPILER_GCC)
-            constexpr std::string_view signature(__PRETTY_FUNCTION__);
-            constexpr std::string_view withT{"[with T = "};
-            constexpr auto pos = signature.find(withT);
-            constexpr auto end = signature.find(";", pos + withT.length());
-            return signature.substr(pos + withT.length(), end - pos - withT.length());
-#elif defined(LLEC_COMPILER_CLANG)
+#if defined(LLEC_COMPILER_CLANG) || defined(LLEC_COMPILER_GCC)
             constexpr std::string_view signature(__PRETTY_FUNCTION__);
             constexpr std::string_view withT{"T = "};
             constexpr auto pos = signature.find(withT);
