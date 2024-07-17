@@ -19,15 +19,13 @@ namespace llec
             constexpr auto pos = signature.find(withT);
             constexpr auto end = signature.find("]", pos + withT.length());
             return signature.substr(pos + withT.length(), end - pos - withT.length());
-#elif defined(LLEC_COMPILER_MSVC)
+#else
             constexpr std::string_view signature(__FUNCSIG__);
             constexpr std::string_view exclude{__func__};
             constexpr auto start = signature.find(exclude);
             constexpr auto offset = start + exclude.length() + 1;
             constexpr auto end = signature.find(">(void) noexcept");
             return signature.substr(offset, end - offset);
-#else
-#error compiler not supported
 #endif
         }
 
