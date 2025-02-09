@@ -27,9 +27,72 @@ namespace llec
         using storage_type = std::conditional_t<traits::is_trivially_xstructible_v<T>, std::array<T, Capacity>,
                                                 details::aligned_storage_t<sizeof(T) * Capacity, alignof(T)>>;
 
+        template <typename It>
+        using iterator_interface = iterator_base<It, std::contiguous_iterator_tag, T>;
+        template <typename It>
+        using const_iterator_interface = iterator_base<It, std::contiguous_iterator_tag, const T>;
+
       public:
-        using iterator = details::basic_contiguous_iterator<T>;
-        using const_iterator = details::basic_contiguous_const_iterator<T>;
+        class iterator : public iterator_interface<iterator>
+        {
+          public:
+            iterator() = default;
+            explicit constexpr iterator(T* c) noexcept : m_it{c}
+            {
+            }
+
+            constexpr auto _get() const noexcept
+            {
+                return m_it;
+            }
+
+          private:
+            friend iterator_interface<iterator>;
+            constexpr T*& base_reference()
+            {
+                return m_it;
+            }
+
+            constexpr T* base_reference() const
+            {
+                return m_it;
+            }
+
+            T* m_it{};
+        };
+
+        class const_iterator : public const_iterator_interface<const_iterator>
+        {
+          public:
+            const_iterator() = default;
+            explicit constexpr const_iterator(const T* c) noexcept : m_it{c}
+            {
+            }
+            constexpr const_iterator(iterator it) : m_it{it._get()}
+            {
+            }
+
+            auto _get() const noexcept
+            {
+                return m_it;
+            }
+
+          private:
+            friend const_iterator_interface<const_iterator>;
+            constexpr const T*& base_reference()
+            {
+                return m_it;
+            }
+
+            constexpr const T* base_reference() const
+            {
+                return m_it;
+            }
+
+            const T* m_it{};
+        };
+
+
         using value_type = T;
         using pointer = T*;
         using const_pointer = const T*;
@@ -134,9 +197,8 @@ namespace llec
         /// @param pos
         /// @param ...args
         /// @return
-        template <typename ConstIt, typename... Args>
-        iterator emplace(ConstIt pos, Args&&... args) noexcept
-        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        template <typename... Args>
+        iterator emplace(const_iterator pos, Args&&... args) noexcept
         {
             LLEC_ASSERT(m_count < Capacity);
 
@@ -166,10 +228,7 @@ namespace llec
             }
 
             m_count++;
-            if constexpr (std::is_same_v<ConstIt, const_iterator>)
-                return iterator{const_cast<typename iterator::pointer>(std::addressof(*_pos))};
-            else
-                return pos;
+            return iterator{const_cast<typename iterator::pointer>(std::addressof(*_pos))};
         }
 
         /// @brief inserts data at the specified position in the vector
@@ -177,9 +236,7 @@ namespace llec
         /// @param pos
         /// @param value
         /// @return
-        template <typename ConstIt>
-        constexpr iterator insert(ConstIt pos, const value_type& value) noexcept
-        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        constexpr iterator insert(const_iterator pos, const value_type& value) noexcept
         {
             return emplace(pos, value);
         }
@@ -189,9 +246,7 @@ namespace llec
         /// @param pos
         /// @param value
         /// @return
-        template <typename ConstIt>
-        constexpr iterator insert(ConstIt pos, value_type&& value) noexcept
-        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        constexpr iterator insert(const_iterator pos, value_type&& value) noexcept
         {
             return emplace(pos, std::move(value));
         }
@@ -203,9 +258,8 @@ namespace llec
         /// @param ibegin
         /// @param iend
         /// @return
-        template <typename ConstIt, typename InputIt>
-        constexpr iterator insert(ConstIt pos, InputIt ibegin, InputIt iend) noexcept
-        requires std::is_same_v<ConstIt, iterator> || std::is_same_v<ConstIt, const_iterator>
+        template <typename InputIt>
+        constexpr iterator insert(const_iterator pos, InputIt ibegin, InputIt iend) noexcept
         {
             LLEC_ASSERT(ibegin < iend);
             LLEC_ASSERT(m_count < Capacity);
@@ -241,10 +295,7 @@ namespace llec
             }
 
             m_count += count;
-            if constexpr (std::is_same_v<ConstIt, const_iterator>)
-                return iterator{const_cast<typename iterator::pointer>(std::addressof(*_pos))};
-            else
-                return pos;
+            return iterator{const_cast<typename iterator::pointer>(std::addressof(*_pos))};
         }
 
         /// @brief pops off data from the back of the vector
@@ -255,15 +306,12 @@ namespace llec
         }
 
         /// @brief removes data from the specified position in the vector
-        /// @tparam It
         /// @param pos
         /// @return
-        template <typename It>
-        constexpr iterator erase(It pos) noexcept
-        requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
+        constexpr iterator erase(const_iterator pos) noexcept
         {
             LLEC_ASSERT(m_count > 0);
-            It itEnd = iterator_selector<It, false>();
+            auto itEnd = cend(); 
             LLEC_ASSERT(pos < itEnd);
             std::destroy_at(std::addressof(*pos));
             m_count--;
@@ -284,13 +332,7 @@ namespace llec
         }
 
         /// @brief removes range of data
-        /// @tparam It
-        /// @param ibegin
-        /// @param iend
-        /// @return
-        template <typename It>
-        constexpr iterator erase(It ibegin, It iend) noexcept
-        requires std::is_same_v<It, iterator> || std::is_same_v<It, const_iterator>
+        constexpr iterator erase(const_iterator ibegin, const_iterator iend) noexcept
         {
             LLEC_ASSERT(ibegin < iend);
 
@@ -300,7 +342,7 @@ namespace llec
             const size_type count = std::distance(ibegin, iend);
             LLEC_ASSERT(count <= m_count);
 
-            It itEnd = iterator_selector<It, false>();
+            auto itEnd = cend();
             m_count -= count;
             std::destroy_n(ibegin, count);
             if (iend == itEnd)
@@ -455,25 +497,6 @@ namespace llec
                 return iterator{const_cast<typename iterator::pointer>(std::addressof(*it))};
             else
                 return it;
-        }
-
-        template <typename ItType, bool Begin>
-        LLEC_NODISCARD constexpr auto iterator_selector() noexcept
-        {
-            if constexpr (std::is_same_v<ItType, iterator>)
-            {
-                if constexpr (Begin)
-                    return begin();
-                else
-                    return end();
-            }
-            else
-            {
-                if constexpr (Begin)
-                    return cbegin();
-                else
-                    return cend();
-            }
         }
 
         constexpr void copy_all(const fixed_vector& other) noexcept

@@ -1,149 +1,186 @@
 /*
  * basic_iterator.hpp
- * provides a basic contiguous iterator implementation.
+ * provides a basic iterator CRTP interface implementation.
  */
 
 #pragma once
+#include <compare>
 #include <iterator>
 
 namespace llec
 {
-    namespace details
+    /// @brief An iterator CRTP interface inspired by boost libraries
+    /// @tparam Derived Actual iterator type
+    /// @tparam Concept Concept or Category
+    template <typename Derived, typename Concept, typename Value, typename Reference = Value&,
+              typename Pointer = Value*, typename DifferenceType = std::ptrdiff_t>
+    class iterator_base
     {
-        template <typename T>
-        class basic_contiguous_iterator
+      public:
+        using iterator_concept = Concept;
+        using iterator_category = Concept;
+        using value_type = Value;
+        using reference = Reference;
+        using pointer = Pointer;
+        using difference_type = DifferenceType;
+
+        constexpr reference operator*() const
         {
-          public:
-            // using iterator_concept = typename std::contiguous_iterator_tag;
-            using iterator_category = typename std::random_access_iterator_tag;
-            using difference_type = std::ptrdiff_t;
-            using value_type = T;
-            using pointer = T*;
-            using reference = T&;
-
-            basic_contiguous_iterator() = default;
-            constexpr basic_contiguous_iterator(T* data) noexcept : ptr(data)
-            {
-            }
-
-            virtual constexpr reference operator*() const noexcept
-            {
-                return *ptr;
-            }
-
-            virtual constexpr pointer operator->() const noexcept
-            {
-                return ptr;
-            }
-
-            virtual constexpr basic_contiguous_iterator& operator++() noexcept
-            {
-                ++ptr;
-                return *this;
-            }
-
-            virtual constexpr basic_contiguous_iterator operator++(int) noexcept
-            {
-                const auto tmp(*this);
-                ++(*this);
-                return tmp;
-            }
-
-            virtual constexpr basic_contiguous_iterator operator+(difference_type n) const noexcept
-            {
-                return basic_contiguous_iterator{ptr + n};
-            }
-
-            virtual constexpr basic_contiguous_iterator& operator+=(difference_type n) noexcept
-            {
-                ptr += n;
-                return *this;
-            }
-
-            virtual constexpr basic_contiguous_iterator& operator--() noexcept
-            {
-                --ptr;
-                return *this;
-            }
-
-            virtual constexpr basic_contiguous_iterator operator--(int) noexcept
-            {
-                const auto tmp(*this);
-                --(*this);
-                return tmp;
-            }
-
-            virtual constexpr basic_contiguous_iterator operator-(difference_type n) const noexcept
-            {
-                return basic_contiguous_iterator{ptr - n};
-            }
-
-            virtual constexpr basic_contiguous_iterator& operator-=(difference_type n) noexcept
-            {
-                ptr -= n;
-                return *this;
-            }
-
-            virtual constexpr difference_type operator-(basic_contiguous_iterator it) const noexcept
-            {
-                return ptr - it.ptr;
-            }
-
-            virtual constexpr reference operator[](difference_type n) const
-            {
-                return ptr[n];
-            }
-
-            virtual constexpr bool operator!=(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr != other.ptr;
-            }
-
-            virtual constexpr bool operator==(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr == other.ptr;
-            }
-
-            virtual constexpr bool operator<(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr < other.ptr;
-            }
-
-            virtual constexpr bool operator<=(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr <= other.ptr;
-            }
-
-            virtual constexpr bool operator>(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr > other.ptr;
-            }
-
-            virtual constexpr bool operator>=(const basic_contiguous_iterator& other) const noexcept
-            {
-                return ptr >= other.ptr;
-            }
-
-          private:
-            T* ptr{nullptr};
-        };
-
-        template <typename T>
-        using basic_contiguous_const_iterator = basic_contiguous_iterator<const T>;
-
-        template <typename T>
-        constexpr basic_contiguous_iterator<T> operator+(const std::iter_difference_t<basic_contiguous_iterator<T>> n,
-                                                         const basic_contiguous_iterator<T> it) noexcept
-        {
-            return it + n;
+            return *static_cast<const Derived*>(this)->base_reference();
         }
 
-        template <typename T>
-        constexpr basic_contiguous_const_iterator<T> operator+(
-            const std::iter_difference_t<basic_contiguous_const_iterator<T>> n,
-            const basic_contiguous_const_iterator<T> it) noexcept
+        constexpr pointer operator->() const
         {
-            return it + n;
+            return static_cast<const Derived*>(this)->base_reference();
         }
-    } // namespace details
+
+        constexpr Derived& operator++()
+        {
+            auto& it = derived().base_reference();
+            ++it;
+            return derived();
+        }
+
+        constexpr Derived operator++(int)
+        {
+            auto temp = derived();
+            auto& it = derived().base_reference();
+            ++it;
+            return temp;
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::bidirectional_iterator_tag> 
+        constexpr Derived& operator--()
+        {
+            auto& it = derived().base_reference();
+            --it;
+            return derived();
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::bidirectional_iterator_tag> 
+        constexpr Derived operator--(int)
+        {
+            auto temp = derived();
+            auto& it = derived().base_reference();
+            --it;
+            return temp;
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::random_access_iterator_tag> 
+        constexpr reference operator[](difference_type n) const
+        {
+            auto it = derived().base_reference();
+            return it[n];
+        }
+
+        constexpr bool operator==(const Derived& iter) const
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = iter.base_reference();
+            return it1 == it2;
+        }
+
+        constexpr bool operator!=(const Derived& iter) const
+        {
+            return !(*this == iter);
+        }
+
+        constexpr bool operator<(const Derived& d) const
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = d.base_reference();
+            return it1 < it2;
+        }
+
+        constexpr bool operator<=(const Derived& d) const
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = d.base_reference();
+            return it1 <= it2;
+        }
+
+        constexpr bool operator>(const Derived& d) const
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = d.base_reference();
+            return it1 > it2;
+        }
+
+        constexpr bool operator>=(const Derived& d) const
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = d.base_reference();
+            return it1 >= it2;
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::random_access_iterator_tag> 
+        constexpr Derived operator+(difference_type n) const noexcept
+        {
+            const auto it = derived().base_reference();
+            return Derived{it + n};
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::random_access_iterator_tag> 
+        constexpr Derived& operator+=(difference_type n) noexcept
+        {
+            auto& it = derived().base_reference();
+            it += n;
+            return derived();
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::random_access_iterator_tag> 
+        constexpr Derived operator-(difference_type n) const noexcept
+        {
+            const auto it = derived().base_reference();
+            return Derived{it - n};
+        }
+
+        template <typename U = Concept>
+        requires std::derived_from<U, std::random_access_iterator_tag> 
+        constexpr Derived& operator-=(difference_type n) noexcept
+        {
+            auto& it = derived().base_reference();
+            it -= n;
+            return derived();
+        }
+
+        constexpr difference_type operator-(const Derived& it) const noexcept
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = it.base_reference();
+            return it1 - it2;
+        }
+
+        constexpr difference_type operator+(const Derived& it) const noexcept
+        {
+            const auto it1 = derived().base_reference();
+            const auto it2 = it.base_reference();
+            return it1 + it2;
+        }
+
+      private:
+        constexpr auto& derived()
+        {
+            return *static_cast<Derived*>(this);
+        }
+
+        constexpr const auto& derived() const
+        {
+            return *static_cast<const Derived*>(this);
+        }
+    };
+
+    template <typename Derived, typename Concept, typename Value>
+    constexpr Derived operator+(const std::iter_difference_t<iterator_base<Derived, Concept, Value>> n,
+                                const iterator_base<Derived, Concept, Value> it) noexcept
+    {
+        return it + n;
+    }
+
 } // namespace llec

@@ -14,9 +14,71 @@ namespace llec
     template <std::size_t Capacity = 512ull>
     class fixed_string
     {
+        template <typename T>
+        using iterator_interface = iterator_base<T, std::contiguous_iterator_tag, char>;
+        template <typename T>
+        using const_iterator_interface = iterator_base<T, std::contiguous_iterator_tag, const char>;
+
       public:
-        using iterator = details::basic_contiguous_iterator<char>;
-        using const_iterator = details::basic_contiguous_const_iterator<char>;
+        class iterator : public iterator_interface<iterator>
+        {
+          public:
+            iterator() = default;
+            explicit constexpr iterator(char* c) noexcept : m_it{c}
+            {
+            }
+            
+            constexpr auto _get() const noexcept
+            {
+                return m_it;
+            }
+
+          private:
+            friend iterator_interface<iterator>;
+            constexpr char*& base_reference()
+            {
+                return m_it;
+            }
+
+            constexpr char* base_reference() const
+            {
+                return m_it;
+            }
+
+            char* m_it{};
+        };
+
+        class const_iterator : public const_iterator_interface<const_iterator>
+        {
+          public:
+            const_iterator() = default;
+            explicit constexpr const_iterator(const char* c) noexcept : m_it{c}
+            {
+            }
+            constexpr const_iterator(iterator it) : m_it{it._get()}
+            {
+            }
+            
+            auto _get() const noexcept
+            {
+                return m_it;
+            }
+
+          private:
+            friend const_iterator_interface<const_iterator>;
+
+            constexpr const char*& base_reference()
+            {
+                return m_it;
+            }
+
+            constexpr const char* base_reference() const
+            {
+                return m_it;
+            }
+
+            const char* m_it{};
+        };
 
         constexpr fixed_string() noexcept = default;
 

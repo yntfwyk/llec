@@ -276,12 +276,14 @@ namespace llec
             typename T::const_iterator;
             {a.begin()} -> std::same_as<typename T::iterator>;
             {a.end()} -> std::same_as<typename T::iterator>;
+            {a.cbegin()} -> std::same_as<typename T::const_iterator>;
+            {a.cend()} -> std::same_as<typename T::const_iterator>;
             {a[n]} -> std::same_as<typename T::value_type&>;
             {a.push_back(v)};
             {a.erase(it)};
             {a.size()};
             {a.data()};
-        } && (std::random_access_iterator<typename T::iterator> || std::contiguous_iterator<typename T::iterator>);
+        } && std::contiguous_iterator<typename T::iterator> && std::contiguous_iterator<typename T::const_iterator>;
 
         // clang-format on
     } // namespace traits

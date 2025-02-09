@@ -1,6 +1,6 @@
 /*
  * typed_handle.hpp
- * a type safe wrapper class around POD data
+ * a type safe wrapper class around a type
  */
 
 #pragma once
@@ -11,9 +11,8 @@ namespace llec
 {
     /// @brief type safe wrapper around a type
     /// @tparam Tag unique tag to distinguish between types
-    /// @tparam RawType underlying type, must be a Plain Old Data type
+    /// @tparam RawType underlying type
     template <typename RawType, typename Tag>
-    requires(std::is_trivial_v<RawType> && std::is_standard_layout_v<RawType>)
     class typed_handle
     {
       public:

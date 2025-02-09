@@ -14,6 +14,13 @@ TEST_CASE("FixedString iteration", "[fixed_string][iteration]")
     SECTION("Non-const iteration")
     {
         llec::fixed_string sstr{"Hello World!"};
+        auto it = sstr.begin();
+        it[0] = 'h';
+        CHECK(it[0] == 'h');
+        CHECK(*(it + 5) == ' ');
+        auto endIt = sstr.end();
+        CHECK(*(endIt - 1) == '!');
+        *it = 'H';
         llec::s32 i{};
         for (auto&& c : sstr)
         {
@@ -24,6 +31,8 @@ TEST_CASE("FixedString iteration", "[fixed_string][iteration]")
     SECTION("Const iteration")
     {
         constexpr llec::fixed_string sstr{"Hello World!"};
+        auto it = sstr.begin();
+        CHECK(it[0] == 'H');
         llec::s32 i{};
         for (auto&& c : sstr)
         {
